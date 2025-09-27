@@ -26,4 +26,4 @@ db.prepare(`
 
 export default db;
 
-console.log("✅ Database ready at:", dbPath);
+

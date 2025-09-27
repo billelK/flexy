@@ -1,9 +1,8 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
-import db from "../src/lib/db.js";
 
-
+import { getAllTransactions } from "../src/lib/transactions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,9 +26,15 @@ const createWindow = () => {
   } else {
     mainWindow.loadFile(path.join(__dirname, "../out/index.html"));
   }
+
+  
 };
 
-app.on("ready", createWindow);
+ipcMain.handle("get-transactions", () => {
+  return getAllTransactions()
+});
+  
+app.on("ready",createWindow)
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
