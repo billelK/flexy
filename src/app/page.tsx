@@ -71,7 +71,7 @@ export default function Page() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-
+              
               {/* Operator */}
               <FormField
                 control={form.control}
@@ -80,7 +80,18 @@ export default function Page() {
                   <FormItem>
                     <FormLabel>Operator</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={(value) => {
+                        field.onChange(value);
+
+                        // auto-fill phone prefix depending on operator
+                        if (value === "Mobilis") {
+                          form.setValue("phone", "06");
+                        } else if (value === "Ooredoo") {
+                          form.setValue("phone", "05");
+                        } else if (value === "Djezzy") {
+                          form.setValue("phone", "07");
+                        }
+                      }} value={field.value}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select operator" />
                         </SelectTrigger>
