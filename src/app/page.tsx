@@ -1,59 +1,64 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
 
-type Transaction = {
+import { transactionSchema, TransactionInput } from "@/lib/validation";
+
+type Transaction = TransactionInput & {
   id: number;
-  operator: string;
-  phone: string;
-  amount: number;
-  status: string;
   created_at: string;
 };
 
-
 export default function Page() {
-  const [operator, setOperator] = useState("");
-  const [phone, setPhone] = useState("");
-  const [amount, setAmount] = useState("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  
-  
+  // setup form
+  const form = useForm<TransactionInput>({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      operator: "",
+      phone: "",
+      amount: 0,
+      status: "Pending",
+    },
+  });
+
   useEffect(() => {
-      async function fetchData() {
-        const rows = await window.electronAPI.getTransactions();
-        setTransactions(rows);
-      }
-      fetchData();
-  },[])
+    async function fetchData() {
+      const rows = await window.electronAPI.getTransactions();
+      setTransactions(rows);
+    }
+    fetchData();
+  }, []);
 
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!operator || !phone || !amount) return;
-
-    const newTx: Transaction = {
+  const onSubmit = async (data: TransactionInput) => {
+    let newTx: Transaction = {
       id: transactions.length + 1,
-      operator,
-      phone,
-      amount: Number(amount),
-      status: "pending",
+      ...data,
       created_at: new Date().toISOString(),
     };
 
-    // TODO: call IPC insertTransaction here
-    setTransactions([...transactions,newTx])
+    setTransactions([...transactions, newTx]);
 
-    // Reset form
-    setOperator("");
-    setPhone("");
-    setAmount("");
+    await window.electronAPI.addTransaction(newTx);
+
+  //   if (result === "1") {
+  //     newTx = { ...newTx, status: "Completed" };
+  //     console.log("Transaction added successfully");
+  //   } else {
+  //     newTx = { ...newTx, status: "Failed" };
+  //     console.log("Failed to add transaction");
+  //   }
   };
 
   return (
@@ -64,37 +69,66 @@ export default function Page() {
           <CardTitle>Recharge Form</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {/* Operator */}
-            <Select value={operator} onValueChange={setOperator}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select operator" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Djezzy">Djezzy</SelectItem>
-                <SelectItem value="Mobilis">Mobilis</SelectItem>
-                <SelectItem value="Ooredoo">Ooredoo</SelectItem>
-              </SelectContent>
-            </Select>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
-            {/* Phone */}
-            <Input
-              type="tel"
-              placeholder="Phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+              {/* Operator */}
+              <FormField
+                control={form.control}
+                name="operator"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Operator</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select operator" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Djezzy">Djezzy</SelectItem>
+                          <SelectItem value="Mobilis">Mobilis</SelectItem>
+                          <SelectItem value="Ooredoo">Ooredoo</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Amount */}
-            <Input
-              type="number"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
+              {/* Phone */}
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="0555123456" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button type="submit">Recharge</Button>
-          </form>
+              {/* Amount */}
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit">Recharge</Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
 
@@ -112,7 +146,7 @@ export default function Page() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Date / Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -128,11 +162,9 @@ export default function Page() {
                     <TableCell>{tx.id}</TableCell>
                     <TableCell>{tx.operator}</TableCell>
                     <TableCell>{tx.phone}</TableCell>
-                    <TableCell>{tx.amount}</TableCell>
+                    <TableCell>{`DA ${tx.amount}.00`}</TableCell>
                     <TableCell>{tx.status}</TableCell>
-                    <TableCell>
-                      {new Date(tx.created_at).toLocaleString()}
-                    </TableCell>
+                    <TableCell>{new Date(tx.created_at).toLocaleString()}</TableCell>
                   </TableRow>
                 ))
               )}

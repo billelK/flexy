@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { getAllTransactions } from "../src/lib/transactions.js";
+import { getAllTransactions,addTransaction } from "../src/lib/transactions.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +32,10 @@ const createWindow = () => {
 
 ipcMain.handle("get-transactions", () => {
   return getAllTransactions()
+});
+
+ipcMain.handle("add-transaction", (event, transaction) => {
+  return addTransaction(transaction)
 });
   
 app.on("ready",createWindow)

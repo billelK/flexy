@@ -17,12 +17,13 @@ db.prepare(`
   CREATE TABLE IF NOT EXISTS transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     operator TEXT,
-    phone TEXT,
-    amount INTEGER,
-    status TEXT,
+    phone TEXT NOT NULL CHECK(phone GLOB '[0-9]*' AND length(phone) = 10),
+    amount REAL NOT NULL CHECK (amount > 50),
+    status TEXT NOT NULL CHECK (status IN ('Pending','Completed','Failed')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `).run();
+
 
 export default db;
 

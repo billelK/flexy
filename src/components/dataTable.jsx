@@ -38,14 +38,14 @@ function DataTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-              <TableRow>
+        <TableRow>
             <TableCell className="font-medium">INV001</TableCell>
             <TableCell>Djezzy</TableCell>
             <TableCell className='text-left'>0696140239</TableCell>
             <TableCell>Success</TableCell>
             <TableCell>DA 500.00</TableCell>
             <TableCell>2025/10/26</TableCell>
-          </TableRow>
+        </TableRow>
             {
               db.map(r => {
                 return (
