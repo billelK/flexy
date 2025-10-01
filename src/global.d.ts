@@ -5,6 +5,7 @@ declare global {
     electronAPI: {
       getTransactions: () => Promise<Transaction[]>;
       addTransaction: () => Promise<number>;
+      mockRecharge: (transaction: any) => Promise<string>;
     };
   }
 }

@@ -10,8 +10,8 @@ export const transactionSchema = z.object({
   status: z.enum(["Pending", "Completed", "Failed"]),
 }).refine((data) => {
     if (data.operator === "Djezzy")  return data.phone.startsWith("07");
-    if (data.operator === "Mobilis") return data.phone.startsWith("05");
-    if (data.operator === "Ooredoo") return data.phone.startsWith("06");
+    if (data.operator === "Mobilis") return data.phone.startsWith("06");
+    if (data.operator === "Ooredoo") return data.phone.startsWith("05");
     return false;
   }, { message: "Phone prefix does not match the selected operator", path: ["phone"] }
 );

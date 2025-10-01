@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,15 +42,21 @@ export default function Page() {
 
   const onSubmit = async (data: TransactionInput) => {
     let newTx: Transaction = {
-      id: transactions.length + 1,
+      id: transactions[transactions.length - 1].id + 1 || 1,
       ...data,
       created_at: new Date().toISOString(),
     };
 
     setTransactions([...transactions, newTx]);
 
-    await window.electronAPI.addTransaction(newTx);
+    console.log(newTx);
+    
+    const transaction = await window.electronAPI.mockRecharge(newTx);
 
+    console.log(transaction);
+    
+
+    await window.electronAPI.addTransaction(transaction);
   //   if (result === "1") {
   //     newTx = { ...newTx, status: "Completed" };
   //     console.log("Transaction added successfully");
@@ -115,7 +120,16 @@ export default function Page() {
                   <FormItem>
                     <FormLabel>Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="0555123456" {...field} />
+                      <Input
+                        {...field}
+                        maxLength={10}
+                        inputMode="numeric"
+                        onChange={(e) => {
+                          // remove all non-digits
+                          const onlyNums = e.target.value.replace(/\D/g, "");
+                          field.onChange(onlyNums);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

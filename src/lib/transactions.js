@@ -1,4 +1,5 @@
 import db from "./db.js";
+// import {transactionSchema } from "./validation.ts";
 
 function getAllTransactions() {
 
@@ -6,21 +7,39 @@ function getAllTransactions() {
     return stmt
 }
 
-function addTransaction(transaction) {
-    const {operator, phone, amount, status} = transaction;
+async function  mockRecharge (transaction) {
+  console.log("⚡ Mock recharge request:", transaction);
 
-    try {
-        const stmt = db.prepare("INSERT INTO transactions (operator, phone, amount, status) VALUES (?, ?, ?, ?)")
-        const result = stmt.run(operator, phone, amount, status);
-        
-        return result.changes 
-        
-        
-    } catch (err) {
-        console.error("Error adding transaction:", err);
-    } 
+  // Simulate delay (2s)
+  await new Promise((res) => setTimeout(res, 2000));
+
+  // Random success or fail
+  const isSuccess = Math.random() > 0.3; // 70% chance success
+  const status = isSuccess ? "Completed" : "Failed";
+
+  return {
+    ...transaction,
+    status,
+    created_at: new Date().toISOString(),
+  }
 }
 
+function addTransaction(data) {
+  // Validate before inserting
+  // const parsed = transactionSchema.safeParse(data);
+  // if (!parsed.success) {
+  //   throw new Error("Validation failed: " + JSON.stringify(parsed.error.errors));
+  // }
+
+  // Now safe to insert into DB
+  const stmt = db.prepare(
+    "INSERT INTO transactions (operator, phone, amount, status) VALUES (?, ?, ?, ?)"
+  );
+  return stmt.run(data.operator, data.phone, data.amount, data.status);
+}
+
+
 export { getAllTransactions,
-         addTransaction
+         addTransaction,
+         mockRecharge
 };

@@ -2,7 +2,8 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { getAllTransactions,addTransaction } from "../src/lib/transactions.js";
+import { getAllTransactions,addTransaction, mockRecharge } from "../src/lib/transactions.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,10 @@ ipcMain.handle("get-transactions", () => {
 
 ipcMain.handle("add-transaction", (event, transaction) => {
   return addTransaction(transaction)
+});
+
+ipcMain.handle("mock-recharge", async (event, transaction) => {
+  return await mockRecharge(transaction)
 });
   
 app.on("ready",createWindow)

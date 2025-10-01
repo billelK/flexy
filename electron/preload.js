@@ -4,4 +4,5 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("electronAPI", {
   getTransactions: () => ipcRenderer.invoke("get-transactions"),
   addTransaction: (transaction) => ipcRenderer.invoke("add-transaction", transaction),
+  mockRecharge: (transaction) => ipcRenderer.invoke("mock-recharge", transaction)
 });
