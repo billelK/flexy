@@ -11,7 +11,7 @@ async function  mockRecharge (transaction) {
   console.log("⚡ Mock recharge request:", transaction);
 
   // Simulate delay (2s)
-  await new Promise((res) => setTimeout(res, 2000));
+  await new Promise((res) => setTimeout(res, 20000));
 
   // Random success or fail
   const isSuccess = Math.random() > 0.3; // 70% chance success

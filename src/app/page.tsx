@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
+import { toast } from "sonner"
 
 import { transactionSchema, TransactionInput } from "@/lib/validation";
 
@@ -48,22 +49,21 @@ export default function Page() {
     };
 
     setTransactions([...transactions, newTx]);
+    toast("Recharge is pending. You'll be notified once it's completed.");
 
-    console.log(newTx);
-    
     const transaction = await window.electronAPI.mockRecharge(newTx);
-
-    console.log(transaction);
-    
-
     await window.electronAPI.addTransaction(transaction);
-  //   if (result === "1") {
-  //     newTx = { ...newTx, status: "Completed" };
-  //     console.log("Transaction added successfully");
-  //   } else {
-  //     newTx = { ...newTx, status: "Failed" };
-  //     console.log("Failed to add transaction");
-  //   }
+    setTransactions([...transactions, transaction])
+
+    if (transaction.status === "Completed") {
+      toast.success("Recharge successful!");
+    } else if (transaction.status === "Failed") {
+      toast.error("Recharge failed. Please try again.");
+    }
+      
+    
+    
+    form.reset();
   };
 
   return (
@@ -188,7 +188,7 @@ export default function Page() {
                     <TableCell>{tx.operator}</TableCell>
                     <TableCell>{tx.phone}</TableCell>
                     <TableCell>{`DA ${tx.amount}.00`}</TableCell>
-                    <TableCell>{tx.status}</TableCell>
+                    <TableCell className={`${tx.status === "Completed" ? "text-green-600" : tx.status === "Failed"? "text-red-600": "text-black"  }`}>{tx.status}</TableCell>
                     <TableCell>{new Date(tx.created_at).toLocaleString()}</TableCell>
                   </TableRow>
                 ))
