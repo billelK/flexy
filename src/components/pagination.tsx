@@ -1,38 +1,31 @@
-import React from 'react'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { Button } from "@/components/ui/button";
 
-function pagination() {
+export function PaginationControls({ page, totalPages, onPageChange }: {
+  page: number;
+  totalPages: number;
+  onPageChange: (newPage: number) => void;
+}) {
   return (
-    <div>
-        <Pagination>
-            <PaginationContent>
-                <PaginationItem>
-                <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-                <PaginationLink href="#">2</PaginationLink>
-                <PaginationLink href="#">3</PaginationLink>
-                <PaginationLink href="#">4</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                <PaginationNext href="#" />
-                </PaginationItem>
-            </PaginationContent>    
-        </Pagination>
-    </div>
-  )
-}
+    <div className="flex items-center justify-between p-4">
+      <Button
+        variant="outline"
+        disabled={page <= 1}
+        onClick={() => onPageChange(page - 1)}
+      >
+        Previous
+      </Button>
 
-export default pagination
+      <span className="text-sm">
+        Page {page} of {totalPages}
+      </span>
+
+      <Button
+        variant="outline"
+        disabled={page >= totalPages}
+        onClick={() => onPageChange(page + 1)}
+      >
+        Next
+      </Button>
+    </div>
+  );
+}

@@ -18,7 +18,7 @@ db.prepare(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     operator TEXT NOT NULL CHECK(operator IN ('Ooredoo','Mobilis','Djezzy')),
     phone TEXT NOT NULL CHECK(phone GLOB '[0-9]*' AND length(phone) = 10),
-    amount REAL NOT NULL CHECK (amount > 50),
+    amount REAL NOT NULL CHECK (amount >= 50),
     status TEXT NOT NULL CHECK (status IN ('Pending','Completed','Failed')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )

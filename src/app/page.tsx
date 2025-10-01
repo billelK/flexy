@@ -12,6 +12,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Form, FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/components/ui/form";
 import { toast } from "sonner"
 
+import TransactionFilters from "@/components/Filters";
+import { PaginationControls } from "@/components/pagination";
+
 import { transactionSchema, TransactionInput } from "@/lib/validation";
 
 type Transaction = TransactionInput & {
@@ -21,6 +24,9 @@ type Transaction = TransactionInput & {
 
 export default function Page() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [filters, setFilters] = useState<any>([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   // setup form
   const form = useForm<TransactionInput>({
@@ -34,30 +40,59 @@ export default function Page() {
   });
 
   useEffect(() => {
-    async function fetchData() {
-      const rows = await window.electronAPI.getTransactions();
-      setTransactions(rows);
-    }
-    fetchData();
-  }, []);
+    // async function fetchData() {
+    //   const rows = await window.electronAPI.getTransactions();
+    //   setTransactions(rows);
+    // }
+    // fetchData();
+
+    window.electronAPI.getTransactions().then((data: Transaction[]) => {
+      let filtered = data
+
+      if (filters.phone) {
+        filtered = filtered.filter(tx => tx.phone.includes(filters.phone));
+      }
+      if (filters.operator) {
+        filtered = filtered.filter(tx => tx.operator === filters.operator);
+      }
+      if (filters.dateRange?.from) {
+        filtered = filtered.filter((t) => {
+          const date = new Date(t.created_at);
+          return filters.dateRange.to
+            ? date >= filters.dateRange.from && date <= filters.dateRange.to
+            : date.toDateString() === filters.dateRange.from.toDateString();
+        });
+      }
+
+      setTransactions(filtered);
+    })
+    
+  }, [filters]);
+
+  const totalPages = Math.ceil(transactions.length / pageSize);
+  const paginated = transactions.slice((page - 1) * pageSize, page * pageSize);
 
   const onSubmit = async (data: TransactionInput) => {
+    
+    
     let newTx: Transaction = {
-      id: transactions[transactions.length - 1].id + 1 || 1,
+      id: transactions.length > 0 ? transactions[transactions.length - 1].id + 1 : 1,
       ...data,
       created_at: new Date().toISOString(),
     };
 
     setTransactions([...transactions, newTx]);
-    toast("Recharge is pending. You'll be notified once it's completed.");
+    const toastId = toast.loading("Recharge is pending. You'll be notified once it's completed.");
 
     const transaction = await window.electronAPI.mockRecharge(newTx);
     await window.electronAPI.addTransaction(transaction);
     setTransactions([...transactions, transaction])
 
     if (transaction.status === "Completed") {
+      toast.dismiss(toastId);
       toast.success("Recharge successful!");
     } else if (transaction.status === "Failed") {
+      toast.dismiss(toastId);
       toast.error("Recharge failed. Please try again.");
     }
       
@@ -69,7 +104,7 @@ export default function Page() {
   return (
     <div className="flex h-screen gap-6 p-6 bg-gray-50">
       {/* Left Form */}
-      <Card className="w-1/3">
+      <Card className="w-1/4">
         <CardHeader>
           <CardTitle>Recharge Form</CardTitle>
         </CardHeader>
@@ -112,6 +147,21 @@ export default function Page() {
                 )}
               />
 
+              {/* Amount */}
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="DA" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* Phone */}
               <FormField
                 control={form.control}
@@ -124,6 +174,7 @@ export default function Page() {
                         {...field}
                         maxLength={10}
                         inputMode="numeric"
+                        placeholder="e.g., 07XXXXXXXX"
                         onChange={(e) => {
                           // remove all non-digits
                           const onlyNums = e.target.value.replace(/\D/g, "");
@@ -136,20 +187,6 @@ export default function Page() {
                 )}
               />
 
-              {/* Amount */}
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Amount</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <Button type="submit">Recharge</Button>
             </form>
@@ -163,6 +200,7 @@ export default function Page() {
           <CardTitle>Transaction History</CardTitle>
         </CardHeader>
         <CardContent>
+          <TransactionFilters onFilter={setFilters}/>
           <Table>
             <TableHeader>
               <TableRow>
@@ -182,7 +220,7 @@ export default function Page() {
                   </TableCell>
                 </TableRow>
               ) : (
-                transactions.map((tx) => (
+                paginated.map((tx) => (
                   <TableRow key={tx.id}>
                     <TableCell>{tx.id}</TableCell>
                     <TableCell>{tx.operator}</TableCell>
@@ -196,6 +234,7 @@ export default function Page() {
             </TableBody>
           </Table>
         </CardContent>
+        <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
       </Card>
     </div>
   );
