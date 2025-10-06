@@ -69,14 +69,13 @@ export default function Page() {
 
   const onSubmit = async (data: TransactionInput) => {
     
-    
     let newTx: Transaction = {
-      id: transactions.length > 0 ? transactions[transactions.length - 1].id + 1 : 1,
+      id: transactions.length > 0 ? transactions[0].id + 1 : 1,
       ...data,
       created_at: new Date().toISOString(),
-    };
-
-    setTransactions([...transactions, newTx]);
+    }
+    
+    setTransactions([newTx,...transactions]);
     const toastId = toast.loading("Recharge is pending. You'll be notified once it's completed.");
 
     const transaction = await window.electronAPI.mockRecharge(newTx);
