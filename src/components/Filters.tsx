@@ -11,13 +11,14 @@ import { format, set } from "date-fns";
 export default function TransactionFilters({ onFilter }: { onFilter: (filters: any) => void }) {
   const [phone, setPhone] = useState("");
   const [operator, setOperator] = useState("");
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+   const [date, setDate] = useState<Date | undefined>(undefined)
 
   const applyFilters = () => {
-    onFilter({ phone, operator, dateRange });
-    setPhone("");
-    setOperator("");
-    setDateRange({})
+    console.log({ phone, operator, date });
+    
+    onFilter({ phone, operator, date });
+
+    console.log({ phone, operator, date });
   };
 
   return (
@@ -50,34 +51,18 @@ export default function TransactionFilters({ onFilter }: { onFilter: (filters: a
 
       {/* Date Range */}
       <div className="flex flex-col gap-1">
-        <label className="text-sm">Date Range</label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="w-[220px]">
-              {dateRange.from ? (
-                dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "dd/MM/yyyy")} - {format(dateRange.to, "dd/MM/yyyy")}
-                  </>
-                ) : (
-                  format(dateRange.from, "dd/MM/yyyy")
-                )
-              ) : (
-                "Pick a date range"
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="p-0">
-            <Calendar
-              mode="range"
-              selected={dateRange}
-              onSelect={setDateRange}
-              numberOfMonths={2}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-
+      <label className="text-sm">Date</label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-[220px] justify-start text-left font-normal">
+            {date ? format(date, "dd/MM/yyyy") : "Pick a date"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="p-0 z-[9999] relative bg-background w-auto">
+          <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+        </PopoverContent>
+      </Popover>
+    </div>
       {/* Apply button */}
       <Button onClick={applyFilters}>Apply</Button>
     </div>

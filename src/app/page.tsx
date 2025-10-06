@@ -17,6 +17,7 @@ import { PaginationControls } from "@/components/pagination";
 
 import { transactionSchema, TransactionInput } from "@/lib/validation";
 
+
 type Transaction = TransactionInput & {
   id: number;
   created_at: string;
@@ -40,11 +41,6 @@ export default function Page() {
   });
 
   useEffect(() => {
-    // async function fetchData() {
-    //   const rows = await window.electronAPI.getTransactions();
-    //   setTransactions(rows);
-    // }
-    // fetchData();
 
     window.electronAPI.getTransactions().then((data: Transaction[]) => {
       let filtered = data
@@ -55,12 +51,11 @@ export default function Page() {
       if (filters.operator) {
         filtered = filtered.filter(tx => tx.operator === filters.operator);
       }
-      if (filters.dateRange?.from) {
+      if (filters.date) {
         filtered = filtered.filter((t) => {
-          const date = new Date(t.created_at);
-          return filters.dateRange.to
-            ? date >= filters.dateRange.from && date <= filters.dateRange.to
-            : date.toDateString() === filters.dateRange.from.toDateString();
+          const txDate = new Date(t.created_at);
+          // Compare only the date part, not the time
+          return txDate.toDateString() === new Date(filters.date).toDateString();
         });
       }
 
