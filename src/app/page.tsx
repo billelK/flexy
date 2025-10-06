@@ -80,7 +80,7 @@ export default function Page() {
 
     const transaction = await window.electronAPI.mockRecharge(newTx);
     await window.electronAPI.addTransaction(transaction);
-    setTransactions([...transactions, transaction])
+    setTransactions([transaction,...transactions])
 
     if (transaction.status === "Completed") {
       toast.dismiss(toastId);

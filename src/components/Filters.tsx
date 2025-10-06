@@ -30,7 +30,9 @@ export default function TransactionFilters({ onFilter }: { onFilter: (filters: a
           placeholder="Search phone..."
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-[180px]"
+          className={`w-[180px] transition-colors ${
+            phone ? "border-primary bg-primary/10" : ""
+          }`}
         />
       </div>
 
@@ -38,7 +40,9 @@ export default function TransactionFilters({ onFilter }: { onFilter: (filters: a
       <div className="flex flex-col gap-1">
         <label className="text-sm">Operator</label>
         <Select value={operator} onValueChange={setOperator}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className={`w-[180px] transition-colors ${
+            operator ? "border-primary bg-primary/10" : ""
+          }`}>
             <SelectValue placeholder="All operators" />
           </SelectTrigger>
           <SelectContent>
@@ -51,10 +55,12 @@ export default function TransactionFilters({ onFilter }: { onFilter: (filters: a
 
       {/* Date Range */}
       <div className="flex flex-col gap-1">
-      <label className="text-sm">Date</label>
+      <label className="text-sm">Date</label> 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[220px] justify-start text-left font-normal">
+          <Button variant="outline" className={`w-[180px] transition-colors ${
+            date ? "border-primary bg-primary/10" : ""
+          }`}>
             {date ? format(date, "dd/MM/yyyy") : "Pick a date"}
           </Button>
         </PopoverTrigger>
@@ -65,6 +71,18 @@ export default function TransactionFilters({ onFilter }: { onFilter: (filters: a
     </div>
       {/* Apply button */}
       <Button onClick={applyFilters}>Apply</Button>
+      {(operator || phone || date) && (
+      <Button
+        variant="outline"
+        onClick={() => {
+          setOperator("");
+          setPhone("");
+          setDate(undefined);
+        }}
+      >
+        Clear Filters
+      </Button>
+    )}
     </div>
   );
 }
