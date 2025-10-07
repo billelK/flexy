@@ -8,17 +8,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format, set } from "date-fns";
 
-export default function TransactionFilters({ onFilter }: { onFilter: (filters: any) => void }) {
+export default function TransactionFilters({ 
+  onFilter,
+  handleClear
+}:{ 
+  onFilter: (filters: any) => void 
+  handleClear: () => void
+}) {
+
   const [phone, setPhone] = useState("");
   const [operator, setOperator] = useState("");
-   const [date, setDate] = useState<Date | undefined>(undefined)
+  const [date, setDate] = useState<Date | undefined>(undefined)
 
   const applyFilters = () => {
-    console.log({ phone, operator, date });
-    
-    onFilter({ phone, operator, date });
-
-    console.log({ phone, operator, date });
+    onFilter({ phone, operator, date })
   };
 
   return (
@@ -71,18 +74,19 @@ export default function TransactionFilters({ onFilter }: { onFilter: (filters: a
     </div>
       {/* Apply button */}
       <Button onClick={applyFilters}>Apply</Button>
-      {(operator || phone || date) && (
+  
       <Button
+        disabled={!(operator || phone || date)}
         variant="outline"
         onClick={() => {
           setOperator("");
           setPhone("");
           setDate(undefined);
+          handleClear();
         }}
       >
         Clear Filters
       </Button>
-    )}
     </div>
   );
 }

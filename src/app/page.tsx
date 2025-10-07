@@ -16,6 +16,7 @@ import TransactionFilters from "@/components/Filters";
 import { PaginationControls } from "@/components/pagination";
 
 import { transactionSchema, TransactionInput } from "@/lib/validation";
+import { set } from "zod";
 
 
 type Transaction = TransactionInput & {
@@ -25,7 +26,7 @@ type Transaction = TransactionInput & {
 
 export default function Page() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filters, setFilters] = useState<any>([]);
+  const [filters, setFilters] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -33,7 +34,7 @@ export default function Page() {
   const form = useForm<TransactionInput>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      operator: "",
+      operator: undefined,
       phone: "",
       amount: 0,
       status: "Pending",
@@ -58,7 +59,7 @@ export default function Page() {
           return txDate.toDateString() === new Date(filters.date).toDateString();
         });
       }
-
+      setPage(1);
       setTransactions(filtered);
     })
     
@@ -69,7 +70,7 @@ export default function Page() {
 
   const onSubmit = async (data: TransactionInput) => {
     
-    let newTx: Transaction = {
+    const newTx: Transaction = {
       id: transactions.length > 0 ? transactions[0].id + 1 : 1,
       ...data,
       created_at: new Date().toISOString(),
@@ -93,6 +94,13 @@ export default function Page() {
     
     
     form.reset();
+  };
+
+  const handleClear = () => {
+    setPage(1);
+    window.electronAPI.getTransactions().then((data: Transaction[]) => {
+      setTransactions(data); 
+    });
   };
 
   return (
@@ -194,7 +202,7 @@ export default function Page() {
           <CardTitle>Transaction History</CardTitle>
         </CardHeader>
         <CardContent>
-          <TransactionFilters onFilter={setFilters}/>
+          <TransactionFilters handleClear={handleClear} onFilter={setFilters}/>
           <Table>
             <TableHeader>
               <TableRow>
