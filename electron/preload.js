@@ -6,4 +6,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   addTransaction: (transaction) => ipcRenderer.invoke("add-transaction", transaction),
   mockRecharge: (transaction) => ipcRenderer.invoke("mock-recharge", transaction),
   detectOperators: () => ipcRenderer.invoke('detect-operators'),
+  saveOperators: (operators) => ipcRenderer.invoke('save-operators', operators),
+  readOperators: () => ipcRenderer.invoke('read-operators'),
 });

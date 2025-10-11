@@ -1,0 +1,22 @@
+[
+  {
+    "path": "COM1",
+    "manufacturer": "(Standard port types)",
+    "operator": "Unknown"
+  },
+  {
+    "path": "COM3",
+    "manufacturer": "Prolific Technology Inc.",
+    "operator": "Airtel"
+  },
+  {
+    "path": "COM4",
+    "manufacturer": "Prolific Technology Inc.",
+    "operator": "Jio"
+  },
+  {
+    "path": "COM5",
+    "manufacturer": "Prolific Technology Inc.",
+    "operator": "Vodafone"
+  }
+]

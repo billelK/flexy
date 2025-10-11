@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 
 import { getAllTransactions,addTransaction, mockRecharge } from "../src/lib/transactions.js";
 import { detectOperators } from "../src/lib/portServices.js";
+import { saveDetectedOperators, readDetectedOperators } from '../src/lib/operatorMappings.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,7 +50,13 @@ ipcMain.handle("detect-operators", async () => {
   return await detectOperators();
 });
  
+ipcMain.handle("save-operators", async (_, operators) => {
+  return saveDetectedOperators(operators)
+})
 
+ipcMain.handle("read-operators", async () => {
+  return readDetectedOperators()
+})
 
 
 app.on("ready",createWindow)

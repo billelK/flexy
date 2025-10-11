@@ -20,6 +20,8 @@ import { transactionSchema, TransactionInput } from "@/lib/validation";
 
 
 
+
+
 type Transaction = TransactionInput & {
   id: number;
   created_at: string;
@@ -27,6 +29,7 @@ type Transaction = TransactionInput & {
 
 export default function Page() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [operators, setOperators] = useState([])
   const [filters, setFilters] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
@@ -76,7 +79,7 @@ export default function Page() {
       ...data,
       created_at: new Date().toISOString(),
     }
-    
+    setPage(1);
     setTransactions([newTx,...transactions]);
     const toastId = toast.loading("Recharge is pending. You'll be notified once it's completed.");
 
@@ -109,19 +112,31 @@ export default function Page() {
     const result = await window.electronAPI.detectOperators();
     toast.dismiss(ts)
     console.log("Detected Operators:", result);
+    setOperators(result)
     toast.success("Operator detection attempted. Check console for details.");
+    await window.electronAPI.saveOperators(result);
   }
 
+  const loadSavedOperators = async () => { // not using this anymore
+    const saved = await window.electronAPI.readOperators()
+    setOperators(saved)
+  }
+
+  useEffect(() => {
+    loadSavedOperators() // not using this anymore
+    // detectOperators()
+  }, [])
+
   return (
-    <div className="flex h-screen gap-6 p-6 bg-gray-50">
+    <div className="flex h-screen justify-between gap-6 p-6 bg-gray-50">
       {/* Left Form */}
-      <Card className="w-1/4">
+      <Card className="w-1/4 flex flex-col relative ">
         <CardHeader>
           <CardTitle>Recharge Form</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col flex-1">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 border-b pb-4 mb-4">
               
               {/* Operator */}
               <FormField
@@ -202,12 +217,45 @@ export default function Page() {
               <Button type="submit">Recharge</Button>
             </form>
           </Form>
+          
+          <div className="mt-auto pt-4">
+            <h3 className="font-semibold mb-3">Detected Operators</h3>
+
+            <div className="space-y-2 sticky bottom-0">
+              {operators.length > 0 ? (
+                operators.map((op, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border"
+                  >
+                    <span className="text-sm font-medium">{op.operator}</span>
+                    {/* <span className="text-gray-500">{op.manufacturer}</span> */}
+                    <span
+                      className={`w-3 h-3 rounded-full ${
+                        op.operator !== "Error" && op.operator !== "Unknown"
+                          ? "bg-green-500"
+                          : "bg-red-500"
+                      }`}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">No operators detected yet.</p>
+              )}
+            </div>
+
+            <button
+              onClick={detectOperators}
+              className="mt-4 w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
+            >
+              Scan Operators
+            </button>
+          </div>
         </CardContent>
-        <Button onClick={detectOperators}> Detect Operators </Button>
       </Card>
 
       {/* Right History */}
-      <Card className="flex-1">
+      <Card className="flex-1 relative">
         <CardHeader>
           <CardTitle>Transaction History</CardTitle>
         </CardHeader>
@@ -246,7 +294,9 @@ export default function Page() {
             </TableBody>
           </Table>
         </CardContent>
-        <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
+        <div className="absolute bottom-4 left-0 w-full ">
+          <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
+        </div>
       </Card>
     </div>
   );
