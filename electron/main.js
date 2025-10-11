@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { getAllTransactions,addTransaction, mockRecharge } from "../src/lib/transactions.js";
-
+import { detectOperators } from "../src/lib/portServices.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +31,8 @@ const createWindow = () => {
   
 };
 
+
+
 ipcMain.handle("get-transactions", () => {
   return getAllTransactions()
 });
@@ -42,7 +44,14 @@ ipcMain.handle("add-transaction", (event, transaction) => {
 ipcMain.handle("mock-recharge", async (event, transaction) => {
   return await mockRecharge(transaction)
 });
-  
+
+ipcMain.handle("detect-operators", async () => {
+  return await detectOperators();
+});
+ 
+
+
+
 app.on("ready",createWindow)
 
 app.on("window-all-closed", () => {

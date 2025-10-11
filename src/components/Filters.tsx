@@ -32,7 +32,11 @@ export default function TransactionFilters({
         <Input
           placeholder="Search phone..."
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          maxLength={10}
+          onChange={(e) => {
+            const onlyNums = e.target.value.replace(/\D/g, "");
+            setPhone(onlyNums);
+          }}
           className={`w-[180px] transition-colors ${
             phone ? "border-primary bg-primary/10" : ""
           }`}
@@ -56,7 +60,7 @@ export default function TransactionFilters({
         </Select>
       </div>
 
-      {/* Date Range */}
+      {/* Date Picker */}
       <div className="flex flex-col gap-1">
       <label className="text-sm">Date</label> 
       <Popover>

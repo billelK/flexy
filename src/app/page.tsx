@@ -16,7 +16,8 @@ import TransactionFilters from "@/components/Filters";
 import { PaginationControls } from "@/components/pagination";
 
 import { transactionSchema, TransactionInput } from "@/lib/validation";
-import { set } from "zod";
+
+
 
 
 type Transaction = TransactionInput & {
@@ -102,6 +103,14 @@ export default function Page() {
       setTransactions(data); 
     });
   };
+
+  const detectOperators = async () => {
+    const ts = toast.loading("Detecting operators...");
+    const result = await window.electronAPI.detectOperators();
+    toast.dismiss(ts)
+    console.log("Detected Operators:", result);
+    toast.success("Operator detection attempted. Check console for details.");
+  }
 
   return (
     <div className="flex h-screen gap-6 p-6 bg-gray-50">
@@ -194,6 +203,7 @@ export default function Page() {
             </form>
           </Form>
         </CardContent>
+        <Button onClick={detectOperators}> Detect Operators </Button>
       </Card>
 
       {/* Right History */}
@@ -218,7 +228,7 @@ export default function Page() {
               {transactions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center text-gray-500">
-                    No transactions yet
+                    No Transactions Found
                   </TableCell>
                 </TableRow>
               ) : (
