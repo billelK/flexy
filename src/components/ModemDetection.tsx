@@ -17,46 +17,55 @@ const {operators,setOperators, detectOperators} = useApp();
     // detectOperators()
   }, [])
   return (
-        <Card className='h-full'>  
+        <Card className="h-full">
             <CardHeader>
-                <CardTitle> Detected Operators</CardTitle>
+                <CardTitle>Detected Operators</CardTitle>
+                <p className="text-sm text-gray-500 mt-1">
+                    Status of available operators.
+                </p>
             </CardHeader>
-            <CardContent>
-                <div className="pt-4">
-                {/* <h3 className="font-semibold mb-3">Detected Operators</h3> */}
 
-                <div className="space-y-2 sticky bottom-0">
-                {operators.length > 0 ? (
-                    operators.map((op, i) => (
+            <CardContent>
+                <div className="space-y-3">
+                {["Mobilis", "Ooredoo", "Djezzy"].map((operator) => {
+                    const found = operators.find((op) => op.operator === operator);
+                    const isOnline =
+                    found && found.operator !== "Unknown" && found.operator !== "Error";
+
+                    return (
                     <div
-                        key={i}
+                        key={operator}
                         className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border"
                     >
-                        <span className="text-sm font-medium">{op.operator}</span>
-                        {/* <span className="text-gray-500">{op.manufacturer}</span> */}
-                        <span
-                        className={`w-3 h-3 rounded-full ${
-                            op.operator !== "Error" && op.operator !== "Unknown"
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                        }`}
+                        <div className="flex items-center space-x-2">
+                        <div
+                            className={`w-3 h-3 rounded-full ${
+                            isOnline ? "bg-green-500" : "bg-red-500"
+                            }`}
                         />
+                        <span className="text-sm font-medium">{operator}</span>
+                        </div>
+                        <span
+                        className={`text-sm ${
+                            isOnline ? "text-green-600" : "text-red-500"
+                        }`}
+                        >
+                        {isOnline ? "Online" : "Offline"}
+                        </span>
                     </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500 text-sm">No operators detected yet.</p>
-                )}
+                    );
+                })}
                 </div>
 
                 <Button
-                    className="mt-10 w-full"
-                    onClick={detectOperators}
-                    >
-                    Scan Operators
+                className="mt-6 w-full"
+                onClick={detectOperators}
+                >
+                Refresh
                 </Button>
-            </div>
             </CardContent>
         </Card>
+
   )
 }
 

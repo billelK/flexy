@@ -15,10 +15,13 @@ const RechargeForm = () => {
         <Card className='h-full'>
             <CardHeader>
             <CardTitle>Recharge Form</CardTitle>
+                <p className="text-sm text-gray-500 mt-1">
+                    Enter details and submit.
+                </p>
             </CardHeader>
             <CardContent className="flex flex-col flex-1">
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 border-b pb-4 mb-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 pb-4 mb-4">
                 
                 {/* Operator */}
                 <FormField
@@ -28,7 +31,8 @@ const RechargeForm = () => {
                     <FormItem>
                         <FormLabel>Operator</FormLabel>
                         <FormControl>
-                        <Select onValueChange={(value) => {
+                        <Select 
+                            onValueChange={(value) => {
                             field.onChange(value);
 
                             // auto-fill phone prefix depending on operator
@@ -63,7 +67,7 @@ const RechargeForm = () => {
                     <FormItem>
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                        <Input type="number" placeholder="DA" {...field} />
+                        <Input type="number" placeholder="Enter Amount" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>

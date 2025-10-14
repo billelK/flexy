@@ -44,7 +44,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             defaultValues: {
             operator: undefined,
             phone: "",
-            amount: 0,
+            amount: "",
             status: "Pending",
             },
     });

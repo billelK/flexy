@@ -34,7 +34,7 @@ export default function Page() {
         <h1>Flexy POS</h1>
       </header>
 
-      <div className="flex flex-1 gap-4 p-4">
+      <div className="flex flex-1 gap-4 p-4 overflow-hidden">
       
         {/* Left Form */}
         <div className="flex-1 flex flex-col">

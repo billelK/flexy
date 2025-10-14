@@ -23,9 +23,12 @@ function TransactionsHistory() {
     <Card className="flex-[2] flex flex-col relative">
             <CardHeader>
               <CardTitle>Transaction History</CardTitle>
+                <p className="text-sm text-gray-500 mt-1">
+                    View recent recharge transactions.
+                </p>
             </CardHeader>
             <CardContent>
-              <TransactionFilters handleClear={handleClear} onFilter={setFilters}/>
+              {/* <TransactionFilters handleClear={handleClear} onFilter={setFilters}/> */}
               <Table>
                 <TableHeader>
                   <TableRow>
