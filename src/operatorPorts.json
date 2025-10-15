@@ -3,5 +3,15 @@
     "path": "COM1",
     "manufacturer": "(Standard port types)",
     "operator": "Unknown"
+  },
+  {
+    "path": "COM3",
+    "manufacturer": "Huawei Technologies Co., Ltd.",
+    "operator": "Ooredoo"
+  },
+  {
+    "path": "COM4",
+    "manufacturer": "Sierra Wireless, Inc.",
+    "operator": "Mobilis"
   }
 ]

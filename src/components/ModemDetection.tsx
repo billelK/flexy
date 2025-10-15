@@ -2,6 +2,9 @@ import React,{useEffect} from 'react'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApp } from "@/context/AppContext";
+import { PiPlugsConnected } from "react-icons/pi";
+import { TbPlugConnected } from "react-icons/tb";
+import Image from 'next/image';
 
 
 function ModemDetection() {
@@ -18,11 +21,21 @@ const {operators,setOperators, detectOperators} = useApp();
   }, [])
   return (
         <Card className="h-full">
-            <CardHeader>
-                <CardTitle>Detected Operators</CardTitle>
-                <p className="text-sm text-gray-500 mt-1">
-                    Status of available operators.
-                </p>
+            <CardHeader className='flex justify-between'>
+                <div>
+                    <CardTitle>Detected Operators</CardTitle>
+                    <p className="text-sm text-gray-500 mt-1">
+                        Status of available operators.
+                    </p>
+                </div>
+                <div>
+                    <Button
+                        className="w-full bg-blue-600"
+                        onClick={detectOperators}
+                        >
+                        Refresh
+                    </Button>
+                </div>
             </CardHeader>
 
             <CardContent>
@@ -38,11 +51,7 @@ const {operators,setOperators, detectOperators} = useApp();
                         className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border"
                     >
                         <div className="flex items-center space-x-2">
-                        <div
-                            className={`w-3 h-3 rounded-full ${
-                            isOnline ? "bg-green-500" : "bg-red-500"
-                            }`}
-                        />
+                        {isOnline ? (<PiPlugsConnected color='green'/>) :(<TbPlugConnected color='red'/>)}
                         <span className="text-sm font-medium">{operator}</span>
                         </div>
                         <span
@@ -56,13 +65,6 @@ const {operators,setOperators, detectOperators} = useApp();
                     );
                 })}
                 </div>
-
-                <Button
-                className="mt-6 w-full"
-                onClick={detectOperators}
-                >
-                Refresh
-                </Button>
             </CardContent>
         </Card>
 

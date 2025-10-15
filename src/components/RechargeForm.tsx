@@ -100,7 +100,7 @@ const RechargeForm = () => {
                 />
 
 
-                <Button type="submit">Recharge</Button>
+                <Button className='bg-blue-600' type="submit">Recharge</Button>
                 </form>
             </Form>
             </CardContent>
