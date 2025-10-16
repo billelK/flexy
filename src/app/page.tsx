@@ -1,7 +1,7 @@
 "use client";
 
 import RechargeForm from "@/components/RechargeForm";
-import ModemDetection from "@/components/modemDetection";
+import ModemDetection from "@/components/ModemDetection";
 import TransactionsHistory from "@/components/TransactionsHistory";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 

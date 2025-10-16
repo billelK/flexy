@@ -104,7 +104,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
             if (filters.date) {
                 filtered = filtered.filter((t) => {
                 const txDate = new Date(t.created_at);
-                // Compare only the date part, not the time
                 return txDate.toDateString() === new Date(filters.date).toDateString();
                 });
             }

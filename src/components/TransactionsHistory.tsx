@@ -1,41 +1,49 @@
 import React,{useEffect} from 'react'
+import Link from 'next/link';
 import {useApp} from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button";
-import TransactionFilters from "@/components/Filters";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PaginationControls } from "@/components/pagination";
+
+
 
 function TransactionsHistory() {
-    const {transactions,handleFilters,handleClear, filters, setFilters, page, setPage} = useApp();
+    const {transactions,setTransactions} = useApp();
+
+    
 
     const pageSize = 8;
-    const totalPages = Math.ceil(transactions.length / pageSize);
-    const paginated = transactions.slice((page - 1) * pageSize, page * pageSize);
-
+    const paginated = transactions.slice(0, pageSize)
+    console.log(paginated);
     
 
     useEffect(() => {
-        handleFilters(filters);
-    }, [filters]);
+      const loadData = async () => {
+        const tx = await window.electronAPI.getTransactions()
+        setTransactions(tx);
+      }
+          loadData()
+    }, []);
 
-    
   return (
     <Card className="flex-[2] flex flex-col relative border-[#C0D2D3]">
             <CardHeader className='flex justify-between'>
               <div>
-                <CardTitle className='text-[#0D5256]'>Transaction History</CardTitle>
+                <CardTitle className='text-[#0D5256]'>Transactions History</CardTitle>
                   <p className="text-sm text-gray-500 mt-1">
                       View recent recharge transactions.
                   </p>
               </div>
               <div>
-                <Button className='w-full bg-[#5EAE94]'> View All </Button>
+                <Button className='w-full bg-[#5EAE94]'>
+                   <Link href={"/history"}>
+                   View All 
+                   </Link>
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {/* <TransactionFilters handleClear={handleClear} onFilter={setFilters}/> */}
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -62,7 +70,7 @@ function TransactionsHistory() {
                         <TableCell>{tx.phone}</TableCell>
                         <TableCell>{`DA ${tx.amount}.00`}</TableCell>
                         <TableCell>
-                          <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-[#5EAE94]": `${tx.status}` === "Failed"? "bg-[#EF4444]": "bg-[#C0D2D3]"}>
+                          <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-[#1A7768]": `${tx.status}` === "Failed"? "bg-[#EF4444]": "bg-[#C0D2D3]"}>
                             {tx.status}
                           </Badge>
                         </TableCell>
@@ -74,7 +82,6 @@ function TransactionsHistory() {
               </Table>
             </CardContent>
             <div className="absolute bottom-4 left-0 w-full ">
-              {/* <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} /> */}
             </div>
     </Card>
   )

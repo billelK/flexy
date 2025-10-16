@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApp } from "@/context/AppContext";
 import { PiPlugsConnected } from "react-icons/pi";
 import { TbPlugConnected } from "react-icons/tb";
-import Image from 'next/image';
 
 
 function ModemDetection() {

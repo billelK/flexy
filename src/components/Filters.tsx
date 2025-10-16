@@ -22,10 +22,11 @@ export default function TransactionFilters({
 
   const applyFilters = () => {
     onFilter({ phone, operator, date })
+    
   };
 
   return (
-    <div className="flex flex-wrap items-end gap-4 p-4 border rounded-lg bg-muted/20">
+    <div className="flex flex-wrap items-end gap-4 p-4 border rounded-lg bg-gray-50">
       {/* Phone search */}
       <div className="flex flex-col gap-1">
         <label className="text-sm">Phone</label>
@@ -66,7 +67,7 @@ export default function TransactionFilters({
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className={`w-[180px] transition-colors ${
-            date ? "border-primary bg-primary/10" : ""
+            date ? "border-primary hover:bg-[#C0D2D3]" : ""
           }`}>
             {date ? format(date, "dd/MM/yyyy") : "Pick a date"}
           </Button>
@@ -77,9 +78,10 @@ export default function TransactionFilters({
       </Popover>
     </div>
       {/* Apply button */}
-      <Button onClick={applyFilters}>Apply</Button>
+      <Button className="bg-[#0D5256]" onClick={applyFilters}>Apply</Button>
   
       <Button
+        className="hover:bg-[#C0D2D3]"
         disabled={!(operator || phone || date)}
         variant="outline"
         onClick={() => {

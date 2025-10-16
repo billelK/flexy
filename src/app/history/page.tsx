@@ -3,36 +3,45 @@ import React,{useEffect} from 'react'
 import {useApp} from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button";
 import TransactionFilters from "@/components/Filters";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationControls } from "@/components/pagination";
+import { usePathname } from "next/navigation";
+
 
 function FullHistory() {
-    const {transactions,handleFilters,handleClear, filters, setFilters, page, setPage} = useApp();
-
-    const pageSize = 5;
+    const {transactions,handleFilters,handleClear,filters, setFilters, page, setPage} = useApp();
+    const pathname = usePathname();
+    const pageSize = 10;
     const totalPages = Math.ceil(transactions.length / pageSize);
     const paginated = transactions.slice((page - 1) * pageSize, page * pageSize);
 
     
-
     useEffect(() => {
         handleFilters(filters);
     }, [filters]);
 
-    
+    useEffect(() => {
+            return () => {
+              if (pathname === "/history") {
+                  // setPage(1)
+                  window.electronAPI.getTransactions().then((data) => {
+                  setFilters(data) 
+                });
+              }
+            }
+    }, [pathname])
   return (
-    <Card className="">
+    <Card className="flex flex-col h-full relative mx-auto mt-5 max-w-5xl w-full border-[#C0D2D3] overflow-hidden ">
             <CardHeader className='flex justify-between'>
               <div>
-                <CardTitle>Transaction History</CardTitle>
+                <CardTitle className='text-[#0D5256]'>Transactions History</CardTitle>
                   <p className="text-sm text-gray-500 mt-1">
-                      View recent recharge transactions.
+                      View recent and old recharge transactions.
                   </p>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className='flex-1 overflow-visible'>
               <TransactionFilters handleClear={handleClear} onFilter={setFilters}/>
               <Table>
                 <TableHeader>
@@ -60,7 +69,7 @@ function FullHistory() {
                         <TableCell>{tx.phone}</TableCell>
                         <TableCell>{`DA ${tx.amount}.00`}</TableCell>
                         <TableCell>
-                          <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-green-500": `${tx.status}` === "Failed"? "bg-red-500": "bg-yellow-500"}>
+                          <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-[#1A7768]": `${tx.status}` === "Failed"? "bg-[#EF4444]": "bg-yellow-500"}>
                             {tx.status}
                           </Badge>
                         </TableCell>
@@ -71,7 +80,7 @@ function FullHistory() {
                 </TableBody>
               </Table>
             </CardContent>
-            <div className="absolute bottom-4 left-0 w-full ">
+            <div className="mt-auto border-t  ">
               <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
             </div>
     </Card>
