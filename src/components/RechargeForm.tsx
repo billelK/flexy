@@ -12,9 +12,9 @@ const RechargeForm = () => {
     const {onSubmit,form} = useApp();
 
     return (
-        <Card className='h-full'>
+        <Card className='h-full border-[#C0D2D3]'>
             <CardHeader>
-            <CardTitle>Recharge Form</CardTitle>
+            <CardTitle className='text-[#0D5256]'>Recharge Form</CardTitle>
                 <p className="text-sm text-gray-500 mt-1">
                     Enter details and submit.
                 </p>
@@ -100,7 +100,7 @@ const RechargeForm = () => {
                 />
 
 
-                <Button className='bg-blue-600' type="submit">Recharge</Button>
+                <Button className='bg-[#0D5256]' type="submit">Recharge</Button>
                 </form>
             </Form>
             </CardContent>

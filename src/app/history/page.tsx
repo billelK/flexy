@@ -1,3 +1,4 @@
+"use client"
 import React,{useEffect} from 'react'
 import {useApp} from "@/context/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,10 +8,10 @@ import TransactionFilters from "@/components/Filters";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationControls } from "@/components/pagination";
 
-function TransactionsHistory() {
+function FullHistory() {
     const {transactions,handleFilters,handleClear, filters, setFilters, page, setPage} = useApp();
 
-    const pageSize = 8;
+    const pageSize = 5;
     const totalPages = Math.ceil(transactions.length / pageSize);
     const paginated = transactions.slice((page - 1) * pageSize, page * pageSize);
 
@@ -22,20 +23,17 @@ function TransactionsHistory() {
 
     
   return (
-    <Card className="flex-[2] flex flex-col relative border-[#C0D2D3]">
+    <Card className="">
             <CardHeader className='flex justify-between'>
               <div>
-                <CardTitle className='text-[#0D5256]'>Transaction History</CardTitle>
+                <CardTitle>Transaction History</CardTitle>
                   <p className="text-sm text-gray-500 mt-1">
                       View recent recharge transactions.
                   </p>
               </div>
-              <div>
-                <Button className='w-full bg-[#5EAE94]'> View All </Button>
-              </div>
             </CardHeader>
             <CardContent>
-              {/* <TransactionFilters handleClear={handleClear} onFilter={setFilters}/> */}
+              <TransactionFilters handleClear={handleClear} onFilter={setFilters}/>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -62,7 +60,7 @@ function TransactionsHistory() {
                         <TableCell>{tx.phone}</TableCell>
                         <TableCell>{`DA ${tx.amount}.00`}</TableCell>
                         <TableCell>
-                          <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-[#5EAE94]": `${tx.status}` === "Failed"? "bg-[#EF4444]": "bg-[#C0D2D3]"}>
+                          <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-green-500": `${tx.status}` === "Failed"? "bg-red-500": "bg-yellow-500"}>
                             {tx.status}
                           </Badge>
                         </TableCell>
@@ -74,10 +72,9 @@ function TransactionsHistory() {
               </Table>
             </CardContent>
             <div className="absolute bottom-4 left-0 w-full ">
-              {/* <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} /> */}
+              <PaginationControls page={page} totalPages={totalPages} onPageChange={setPage} />
             </div>
     </Card>
   )
 }
-
-export default TransactionsHistory
+export default FullHistory

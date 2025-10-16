@@ -20,17 +20,17 @@ const {operators,setOperators, detectOperators} = useApp();
     // detectOperators()
   }, [])
   return (
-        <Card className="h-full">
+        <Card className="h-full border-[#C0D2D3]">
             <CardHeader className='flex justify-between'>
                 <div>
-                    <CardTitle>Detected Operators</CardTitle>
+                    <CardTitle className='text-[#0D5256]'>Detected Operators</CardTitle>
                     <p className="text-sm text-gray-500 mt-1">
                         Status of available operators.
                     </p>
                 </div>
                 <div>
                     <Button
-                        className="w-full bg-blue-600"
+                        className="w-full bg-[#5EAE94]"
                         onClick={detectOperators}
                         >
                         Refresh
@@ -51,12 +51,12 @@ const {operators,setOperators, detectOperators} = useApp();
                         className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border"
                     >
                         <div className="flex items-center space-x-2">
-                        {isOnline ? (<PiPlugsConnected color='green'/>) :(<TbPlugConnected color='red'/>)}
+                        {isOnline ? (<PiPlugsConnected color='#1A7768'/>) :(<TbPlugConnected color='#EF4444'/>)}
                         <span className="text-sm font-medium">{operator}</span>
                         </div>
                         <span
                         className={`text-sm ${
-                            isOnline ? "text-green-600" : "text-red-500"
+                            isOnline ? "text-[#1A7768]" : "text-[#EF4444]"
                         }`}
                         >
                         {isOnline ? "Online" : "Offline"}

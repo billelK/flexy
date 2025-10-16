@@ -42,7 +42,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const form = useForm<TransactionInput>({
             resolver: zodResolver(transactionSchema),
             defaultValues: {
-            operator: undefined,
+            operator: "",
             phone: "",
             amount: "",
             status: "Pending",
