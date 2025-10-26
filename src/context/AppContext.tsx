@@ -45,6 +45,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             operator: "",
             phone: "",
             amount: "",
+            mode:"",
             status: "Pending",
             },
     });
@@ -82,11 +83,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Modem Detection Dependencies
     const detectOperators = async () => {
 
-            const ts = toast.loading("Detecting operators...");
+            const ts = toast.loading("Detecting sim modems...");
             const result = await window.electronAPI.detectOperators();
             toast.dismiss(ts)
             setOperators(result)
-            toast.success("Operator detection attempted. Check console for details.");
+            toast.success("Operator detection scan completed.");
             await window.electronAPI.saveOperators(result);
     }
 

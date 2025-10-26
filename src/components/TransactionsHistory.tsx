@@ -11,13 +11,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 function TransactionsHistory() {
     const {transactions,setTransactions} = useApp();
 
-    
-
     const pageSize = 8;
     const paginated = transactions.slice(0, pageSize)
-    console.log(paginated);
     
-
     useEffect(() => {
       const loadData = async () => {
         const tx = await window.electronAPI.getTransactions()
@@ -36,7 +32,7 @@ function TransactionsHistory() {
                   </p>
               </div>
               <div>
-                <Button className='w-full bg-[#5EAE94]'>
+                <Button className='w-full bg-[#0D5256]'>
                    <Link href={"/history"}>
                    View All 
                    </Link>
@@ -52,6 +48,7 @@ function TransactionsHistory() {
                     <TableHead>Phone</TableHead>
                     <TableHead>Amount</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Mode</TableHead>
                     <TableHead>Date / Time</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -74,6 +71,7 @@ function TransactionsHistory() {
                             {tx.status}
                           </Badge>
                         </TableCell>
+                        <TableCell>{tx.mode}</TableCell>
                         <TableCell>{new Date(tx.created_at).toLocaleString()}</TableCell>
                       </TableRow>
                     ))

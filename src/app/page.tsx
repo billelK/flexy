@@ -31,7 +31,7 @@ export default function Page() {
       <div className="flex-1 ">
         <Card className="h-full mx-4 border-[#C0D2D3]">
           <CardHeader>
-            <CardTitle className="text-lg font-medium text-[#0D5256]">Recent Offers</CardTitle>
+            <CardTitle className="text-[#0D5256]">Recent Offers</CardTitle>
             <p className="text-sm text-gray-500">
               Check out our latest offers and promotions on mobile recharges!
             </p>

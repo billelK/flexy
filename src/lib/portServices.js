@@ -5,7 +5,7 @@ import { ReadlineParser } from "@serialport/parser-readline";
 export async function detectOperators() {
   const ports = await SerialPort.list();
   const results = [];
-
+  
   for (const info of ports) {
     let operator = "Unknown";
     try {

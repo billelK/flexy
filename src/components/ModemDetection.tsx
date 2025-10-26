@@ -29,7 +29,7 @@ const {operators,setOperators, detectOperators} = useApp();
                 </div>
                 <div>
                     <Button
-                        className="w-full bg-[#5EAE94]"
+                        className="w-full bg-[#0D5256]"
                         onClick={detectOperators}
                         >
                         Refresh

@@ -45,12 +45,12 @@ const RechargeForm = () => {
                             }
                         }} value={field.value}>
                             <SelectTrigger>
-                            <SelectValue placeholder="Select operator" />
+                                <SelectValue placeholder="Select operator" />
                             </SelectTrigger>
                             <SelectContent>
-                            <SelectItem value="Djezzy">Djezzy</SelectItem>
-                            <SelectItem value="Mobilis">Mobilis</SelectItem>
-                            <SelectItem value="Ooredoo">Ooredoo</SelectItem>
+                                <SelectItem value="Djezzy">Djezzy</SelectItem>
+                                <SelectItem value="Mobilis">Mobilis</SelectItem>
+                                <SelectItem value="Ooredoo">Ooredoo</SelectItem>
                             </SelectContent>
                         </Select>
                         </FormControl>
@@ -67,7 +67,7 @@ const RechargeForm = () => {
                     <FormItem>
                         <FormLabel>Amount</FormLabel>
                         <FormControl>
-                        <Input type="number" placeholder="Enter Amount" {...field} />
+                        <Input type="number" placeholder="Enter Amount DA" {...field} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -93,6 +93,35 @@ const RechargeForm = () => {
                             field.onChange(onlyNums);
                             }}
                         />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+
+
+
+                {/* Mode */}
+                <FormField
+                    control={form.control}
+                    name="mode"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Mode</FormLabel>
+                        <FormControl>
+                        <Select 
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select mode" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Recharge">Recharge</SelectItem>
+                                <SelectItem value="Activation">Activation</SelectItem>
+                                <SelectItem value="Facture">Facture</SelectItem>
+                            </SelectContent>
+                        </Select>
                         </FormControl>
                         <FormMessage />
                     </FormItem>

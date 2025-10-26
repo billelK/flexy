@@ -20,6 +20,7 @@ db.prepare(`
     phone TEXT NOT NULL CHECK(phone GLOB '[0-9]*' AND length(phone) = 10),
     amount REAL NOT NULL CHECK (amount >= 50),
     status TEXT NOT NULL CHECK (status IN ('Pending','Completed','Failed')),
+    mode TEXT NOT NULL CHECK(mode IN ('Recharge','Facture','Activation')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `).run();

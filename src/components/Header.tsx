@@ -24,7 +24,7 @@ function Header() {
         </div>
 
           {/* navigation menu */}
-           <div className="flex gap-2 w-[250px] border rounded-lg p-1 bg-gray-50">
+           <div className="flex gap-2 w-[250px] border border-[#C0D2D3] rounded-lg p-1 bg-gray-50">
               {tabs.map((tab) => (
                 <Link
                   key={tab.href}

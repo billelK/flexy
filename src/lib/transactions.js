@@ -22,9 +22,9 @@ async function  mockRecharge (transaction) {
 
 function addTransaction(data) {
   const stmt = db.prepare(
-    "INSERT INTO transactions (operator, phone, amount, status) VALUES (?, ?, ?, ?)"
+    "INSERT INTO transactions (operator, phone, amount, mode, status) VALUES (?, ?, ?, ?, ?)"
   );
-  return stmt.run(data.operator, data.phone, data.amount, data.status);
+  return stmt.run(data.operator, data.phone, data.amount, data.mode, data.status);
 }
 
 

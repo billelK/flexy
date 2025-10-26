@@ -5,6 +5,9 @@ export const transactionSchema = z.object({
   operator: z.enum(["Djezzy", "Mobilis", "Ooredoo"], {
     errorMap: () => ({ message: "Please select a valid operator" }),
   }),
+  mode: z.enum(["Recharge", "Facture", "Activation"], {
+    errorMap: () => ({ message: "Please select a valid mode" }),
+  }),
   phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
   amount: z.coerce.number().min(50, "Minimum amount is 50 DA"),
   status: z.enum(["Pending", "Completed", "Failed"]),

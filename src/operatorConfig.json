@@ -1,0 +1,23 @@
+{
+  "Djezzy": {
+    "modes": {
+      "Activation": "*760*{number}*0000#",
+      "Recharge": "*760*{number}*{amount}*0000#",
+      "Facture": "*761*{number}*{amount}*0000#"
+    }
+  },
+  "Mobilis": {
+    "modes": {
+      "Activation": "*696*1*{number}*04*{amount}*12345#",
+      "Recharge": "*630*{number}*04*{amount}*12345#",
+      "Facture": "*633*{number}*04*{amount}*12345#"
+    }
+  },
+  "Ooredoo": {
+    "modes": {
+      "Activation": "*585*{number}*1965#",
+      "Recharge": "*585*{number}*{amount}*1965#",
+      "Facture": "none"
+    }
+  }
+}

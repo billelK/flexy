@@ -51,6 +51,7 @@ function FullHistory() {
                     <TableHead>Phone</TableHead>
                     <TableHead>Amount</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Mode</TableHead>
                     <TableHead>Date / Time</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -73,6 +74,7 @@ function FullHistory() {
                             {tx.status}
                           </Badge>
                         </TableCell>
+                        <TableCell>{tx.mode}</TableCell>
                         <TableCell>{new Date(tx.created_at).toLocaleString()}</TableCell>
                       </TableRow>
                     ))
