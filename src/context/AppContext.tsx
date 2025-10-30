@@ -64,15 +64,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const toastId = toast.loading("Recharge is pending. You'll be notified once it's completed.");
 
         const transaction = await window.electronAPI.mockRecharge(newTx);
+        
         await window.electronAPI.addTransaction(transaction);
         setTransactions([transaction,...transactions])
 
         if (transaction.status === "Completed") {
         toast.dismiss(toastId);
-        toast.success("Recharge successful!");
+        toast.success(transaction.message);
         } else if (transaction.status === "Failed") {
         toast.dismiss(toastId);
-        toast.error("Recharge failed. Please try again.");
+        toast.error(transaction.message);
         }
         
         

@@ -17,7 +17,7 @@
     "modes": {
       "Activation": "*585*{number}*1965#",
       "Recharge": "*585*{number}*{amount}*1965#",
-      "Facture": "none"
+      "Facture": ""
     }
   }
 }
