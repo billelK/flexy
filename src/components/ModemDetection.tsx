@@ -22,7 +22,7 @@ const {operators,setOperators, detectOperators} = useApp();
         <Card className="h-full border-[#C0D2D3]">
             <CardHeader className='flex justify-between'>
                 <div>
-                    <CardTitle className='text-[#0D5256]'>Detected Operators</CardTitle>
+                    <CardTitle className='text-[#0D5256] '>Detected Operators</CardTitle>
                     <p className="text-sm text-gray-500 mt-1">
                         Status of available operators.
                     </p>

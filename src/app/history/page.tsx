@@ -32,10 +32,10 @@ function FullHistory() {
             }
     }, [pathname])
   return (
-    <Card className="flex flex-col h-full relative mx-auto mt-5 max-w-5xl w-full border-[#C0D2D3] overflow-hidden ">
+    <Card className="flex flex-col h-full relative mx-auto mt-5 max-w-5xl w-screen  border-[#C0D2D3] overflow-hidden ">
             <CardHeader className='flex justify-between'>
               <div>
-                <CardTitle className='text-[#0D5256]'>Transactions History</CardTitle>
+                <CardTitle className='text-[#0D5256] text-xl'>Transactions History</CardTitle>
                   <p className="text-sm text-gray-500 mt-1">
                       View recent and old recharge transactions.
                   </p>
