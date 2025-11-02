@@ -32,7 +32,7 @@ function FullHistory() {
             }
     }, [pathname])
   return (
-    <Card className="flex flex-col h-full relative mx-auto mt-5 max-w-5xl w-screen  border-[#C0D2D3] overflow-hidden ">
+    <Card className="flex flex-col h-full relative min-h-[725px] mx-auto mt-5 max-w-7xl w-screen  border-[#C0D2D3] overflow-hidden ">
             <CardHeader className='flex justify-between'>
               <div>
                 <CardTitle className='text-[#0D5256] text-xl'>Transactions History</CardTitle>

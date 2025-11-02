@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { IoPencil } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { Button } from "@/components/ui/button";
+import { FiPlusCircle } from "react-icons/fi";
 
 const offers = [
   {
@@ -31,14 +34,6 @@ const offers = [
     price: "2500 DZD",
   },
   {
-    id: 4,
-    operator: "Djezzy",
-    logo: "/Djezzy-red.png",
-    title: "Djezzy",
-    description: "Enjoy unlimited calls and 1GB data for 3 days.",
-    price: "500 DZD",
-  },
-  {
     id: 5,
     operator: "Mobilis",
     logo: "/mobilis-white.png",
@@ -54,11 +49,27 @@ const offers = [
     description: "Enjoy unlimited calls and 1GB data for 3 days.",
     price: "250 DZD",
   },
+  {
+    id: 4,
+    operator: "Djezzy",
+    logo: "/Djezzy-red.png",
+    title: "Djezzy",
+    description: "Enjoy unlimited calls and 1GB data for 3 days.",
+    price: "500 DZD",
+  }
 ];
-
+const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 export default function OffersPage() {
+
+   const [activeFilter, setActiveFilter] = useState("ALL");
+
+  const filteredOffers =
+    activeFilter === "ALL"
+      ? offers
+      : offers.filter((offer) => offer.operator === activeFilter);
+
   return (
-    <Card className="flex flex-col h-full relative mx-auto p-5 mt-5 max-w-5xl w-screen border-[#C0D2D3] overflow-hidden ">
+    <Card className="flex flex-col h-full relative mx-auto p-5 mt-5 max-w-7xl w-screen border-[#C0D2D3] overflow-hidden ">
       <CardHeader className='flex justify-between'>
               <div>
                 <CardTitle className='text-[#0D5256] text-xl'>Offers</CardTitle>
@@ -66,9 +77,27 @@ export default function OffersPage() {
                       Browse, create, and manage your offers.
                   </p>
               </div>
+              <div className="flex gap-2">
+                <div className="flex flex-wrap rounded-lg bg-[#C0D2D3]/40 gap-1">
+                  {operators.map((op) => (
+                    <button
+                      key={op}
+                      onClick={() => setActiveFilter(op)}
+                      className={`px-5 py-2  text-sm font-medium transition-all duration-200 ${
+                        activeFilter === op
+                          ? "bg-[#1A7768] text-white shadow-md rounded-lg"
+                          : "text-[#0D5256] hover:bg-[#5EAE94]/40 rounded-lg"
+                      }`}
+                    >
+                      {op}
+                    </button>
+                  ))}
+                </div>
+                <Button className='bg-[#0D5256]' type="submit"><FiPlusCircle className="h-5 w-5" color="white"/>Create Offer</Button>
+              </div>
             </CardHeader>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 cursor-pointer bg-">
-          {offers.map((offer) => (
+          {filteredOffers.map((offer) => (
             <div
               key={offer.id}
               className="rounded-2xl overflow-hidden border border-[#C0D2D3]/40 shadow-sm hover:shadow-md hover:-translate-y-1 transition-transform bg-[#f9fafb]"
