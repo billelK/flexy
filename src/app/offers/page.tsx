@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { IoPencil } from "react-icons/io5";
@@ -8,60 +8,17 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { FiPlusCircle } from "react-icons/fi";
 
-const offers = [
-  {
-    id: 1,
-    operator: "Djezzy",
-    logo: "/Djezzy-red.png",
-    title: "Djezzy Hayla",
-    description: "20GB Internet + Unlimited Calls Towards Djezzy.",
-    price: "1500 DZD",
-  },
-  {
-    id: 2,
-    operator: "Mobilis",
-    logo: "/mobilis-white.png",
-    title: "Mobilis PiXx",
-    description: "Enjoy unlimited calls and 10GB of data.",
-    price: "1000 DZD",
-  },
-  {
-    id: 3,
-    operator: "Ooredoo",
-    logo: "/Ooredoo-white.png",
-    title: "Ooredoo Maxy",
-    description: "Enjoy unlimited calls and 1GB data for 3 days.",
-    price: "2500 DZD",
-  },
-  {
-    id: 5,
-    operator: "Mobilis",
-    logo: "/mobilis-white.png",
-    title: "Mobilis",
-    description: "Enjoy unlimited calls and 1GB data for 3 days.",
-    price: "300 DZD",
-  },
-  {
-    id: 6,
-    operator: "Ooredoo",
-    logo: "/Ooredoo-white.png",
-    title: "Ooredoo",
-    description: "Enjoy unlimited calls and 1GB data for 3 days.",
-    price: "250 DZD",
-  },
-  {
-    id: 4,
-    operator: "Djezzy",
-    logo: "/Djezzy-red.png",
-    title: "Djezzy",
-    description: "Enjoy unlimited calls and 1GB data for 3 days.",
-    price: "500 DZD",
-  }
-];
+
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 export default function OffersPage() {
-
+   const [offers, setOffers] = useState([]); 
    const [activeFilter, setActiveFilter] = useState("ALL");
+
+useEffect(() => {
+    window.electronAPI.getOffers().then((data) => {
+      setOffers(data);
+    });
+}, []);
 
   const filteredOffers =
     activeFilter === "ALL"
@@ -103,9 +60,9 @@ export default function OffersPage() {
               className="rounded-2xl overflow-hidden border border-[#C0D2D3]/40 shadow-sm hover:shadow-md hover:-translate-y-1 transition-transform bg-[#f9fafb]"
             >
               {/* Image banner */}
-              <div className="relative w-full h-35">
+              <div className="relative w-full h-35 bg-white">
                 <Image
-                  src={offer.logo}
+                  src={offer.image}
                   alt={offer.title}
                   fill
                   className="object-cover"

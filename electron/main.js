@@ -3,6 +3,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { getAllTransactions,addTransaction, mockRecharge } from "../src/lib/transactions.js";
+import { getAllOffers } from "../src/lib/offers.js";
+
 import { detectOperators, performRecharge } from "../src/lib/portServices.js";
 import { saveDetectedOperators, readDetectedOperators } from '../src/lib/operatorMappings.js'
 
@@ -28,14 +30,16 @@ const createWindow = () => {
   } else {
     mainWindow.loadFile(path.join(__dirname, "../out/index.html"));
   }
-
-  
 };
 
 
 
 ipcMain.handle("get-transactions", () => {
   return getAllTransactions()
+});
+
+ipcMain.handle("get-offers", () => {
+  return getAllOffers();
 });
 
 ipcMain.handle("add-transaction", (event, transaction) => {

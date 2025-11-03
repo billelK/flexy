@@ -12,7 +12,7 @@ if (!fs.existsSync(dbDir)) {
 
 const db = new Database(dbPath);
 
-// Create table if not exists
+// Create transations table if not exists
 db.prepare(`
   CREATE TABLE IF NOT EXISTS transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +25,18 @@ db.prepare(`
   )
 `).run();
 
+// Offers table
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS offers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    operator TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    price INTEGER NOT NULL,
+    ussd_code TEXT NOT NULL,
+    image TEXT
+  )
+`).run();
 
 export default db;
 
