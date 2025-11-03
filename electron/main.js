@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { getAllTransactions,addTransaction, mockRecharge } from "../src/lib/transactions.js";
-import { getAllOffers } from "../src/lib/offers.js";
+import { getAllOffers, addOffer} from "../src/lib/offers.js";
 
 import { detectOperators, performRecharge } from "../src/lib/portServices.js";
 import { saveDetectedOperators, readDetectedOperators } from '../src/lib/operatorMappings.js'
@@ -42,8 +42,13 @@ ipcMain.handle("get-offers", () => {
   return getAllOffers();
 });
 
+
 ipcMain.handle("add-transaction", (event, transaction) => {
   return addTransaction(transaction)
+});
+
+ipcMain.handle("add-offer", (event, offer) => {
+  return addOffer(offer)
 });
 
 ipcMain.handle("mock-recharge", async (event, transaction) => {
