@@ -68,7 +68,7 @@ function FullHistory() {
                         <TableCell>{tx.id}</TableCell>
                         <TableCell>{tx.operator}</TableCell>
                         <TableCell>{tx.phone}</TableCell>
-                        <TableCell>{`DA ${tx.amount}.00`}</TableCell>
+                        <TableCell>{`${tx.amount} DA`}</TableCell>
                         <TableCell>
                           <Badge variant="destructive" className={`${tx.status}` === "Completed"? "bg-[#1A7768]": `${tx.status}` === "Failed"? "bg-[#EF4444]": "bg-yellow-500"}>
                             {tx.status}

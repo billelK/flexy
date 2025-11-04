@@ -18,6 +18,18 @@ export const transactionSchema = z.object({
     return false;
   }, { message: "Phone prefix does not match the selected operator", path: ["phone"] }
 );
-       
+
+export const offerSchema = z.object({
+  operator: z
+  .string()
+  .refine(
+    val => ["Djezzy", "Mobilis", "Ooredoo"].includes(val),
+    { message: "Please select a valid operator" }
+  ),
+  title: z.string().nonempty("Title is required"),
+  description: z.string().nonempty("Description is required"),
+  price: z.coerce.number().min(50, "Minimum price is 50 DA"),
+  ussd: z.string().nonempty("USSD code is required"),
+})
 
 export type TransactionInput = z.infer<typeof transactionSchema>;

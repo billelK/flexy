@@ -29,7 +29,7 @@ db.prepare(`
 db.prepare(`
   CREATE TABLE IF NOT EXISTS offers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    operator TEXT NOT NULL,
+    operator TEXT NOT NULL CHECK(operator IN ('Ooredoo','Mobilis','Djezzy')),
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     price INTEGER NOT NULL,

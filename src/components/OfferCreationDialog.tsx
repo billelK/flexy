@@ -14,7 +14,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { useState } from "react"
 import { FiPlusCircle } from "react-icons/fi";
-
+import { offerSchema } from "@/lib/validation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner"
 
 export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (offer: any) => void, openState: boolean, setOpen: (open: boolean) => void }) {
   const [form, setForm] = useState({
@@ -25,22 +27,39 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
     ussd: "",
     image: "" 
   })
+  const [errors, setErrors] = useState({})
 
   function handleChange(field: string, value: string) {
     setForm(prev => ({ ...prev, [field]: value }))
+     setErrors(prev => ({ ...prev, [field]: undefined }))
   }
 
-  function handleSubmit() {
-    if (!form.operator || !form.title || !form.price) return
-    onCreate(form)
+  function resetForm() {
     setForm({
       operator: "",
       title: "",
       description: "",
       price: "",
       ussd: "",
-      image: "" 
-    })  
+      image: ""
+    })
+    setErrors({})
+  }
+
+  function handleSubmit() {
+    const result = offerSchema.safeParse(form)
+
+    if (!result.success) {
+    // Extract and show first error message
+   const fieldErrors = result.error.flatten().fieldErrors
+    setErrors(fieldErrors)
+    console.log(errors);
+    
+    // toast.error(firstError || "Invalid form input")
+    return
+  }
+    onCreate(form)
+    resetForm() 
   }
 
   return (
@@ -62,16 +81,19 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
             <Label htmlFor="operator" className="text-right">
               Operator *
             </Label>
-            <Select onValueChange={v => handleChange("operator", v)}>
+            <Select value={form.operator} onValueChange={v => handleChange("operator", v)}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Choose operator" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="djezzy">Djezzy</SelectItem>
-                <SelectItem value="mobilis">Mobilis</SelectItem>
-                <SelectItem value="ooredoo">Ooredoo</SelectItem>
+              <SelectContent >
+                <SelectItem value="Djezzy">Djezzy</SelectItem>
+                <SelectItem value="Mobilis">Mobilis</SelectItem>
+                <SelectItem value="Ooredoo">Ooredoo</SelectItem>
               </SelectContent>
             </Select>
+            {errors.operator && (
+            <p className="col-span-4 text-sm text-red-500 text-right">{errors.operator}</p>
+          )}
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
@@ -85,6 +107,9 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
               className="col-span-3"
               placeholder="Title"
             />
+            {errors.title && (
+            <p className="col-span-4 text-sm text-red-500 text-right">{errors.title}</p>
+          )}
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
@@ -98,6 +123,9 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
               className="col-span-3"
               placeholder="Offer details"
             />
+            {errors.description && (
+            <p className="col-span-4 text-sm text-red-500 text-right">{errors.description}</p>
+          )}
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
@@ -111,6 +139,9 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
               onChange={e => handleChange("price", e.target.value)}
               className="col-span-3"
             />
+            {errors.price && (
+            <p className="col-span-4 text-sm text-red-500 text-right">{errors.price}</p>
+          )}
           </div>
 
            <div className="grid grid-cols-4 items-center gap-4">
@@ -123,6 +154,9 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
               onChange={e => handleChange("ussd", e.target.value)}
               className="col-span-3"
             />
+            {errors.ussd && (
+            <p className="col-span-4 text-sm text-red-500 text-right">{errors.ussd}</p>
+          )}
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">

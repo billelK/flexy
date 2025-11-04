@@ -33,9 +33,9 @@ const filteredOffers =
 const onCreateOffer = async (newOffer: any) => {
     const toastId = toast.loading("Adding new offer...");
     if (!newOffer.image) {
-      if (newOffer.operator === "djezzy") {
+      if (newOffer.operator === "Djezzy") {
         newOffer.image = "/Djezzy-red.png"
-      } else if (newOffer.operator === "ooredoo") {
+      } else if (newOffer.operator === "Ooredoo") {
         newOffer.image = "/Ooredoo-white.png"
       }else {
         newOffer.image = "/Mobilis-white.png"
@@ -112,7 +112,7 @@ const onCreateOffer = async (newOffer: any) => {
                     
                 </div>
                 <div className="flex justify-between items-center">
-                        <p className="text-[#1A7768] font-medium text-lg">{offer.price}</p>
+                        <p className="text-[#1A7768] font-medium text-lg">{offer.price} DA</p>
                         <div className="flex gap-1">
                             <IoPencil className="p-1 rounded-full cursor-pointer transition-all duration-200
                                                 hover:scale-110 active:scale-95 w-7 h-7 " color='#1A7768'/>
