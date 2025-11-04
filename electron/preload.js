@@ -8,6 +8,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   addTransaction: (transaction) => ipcRenderer.invoke("add-transaction", transaction),
   addOffer: (offer) => ipcRenderer.invoke("add-offer", offer),
   
+  updateOffer: (offer) => ipcRenderer.invoke("update-offer", offer),
+
   mockRecharge: (transaction) => ipcRenderer.invoke("mock-recharge", transaction),
   detectOperators: () => ipcRenderer.invoke('detect-operators'),
   saveOperators: (operators) => ipcRenderer.invoke('save-operators', operators),

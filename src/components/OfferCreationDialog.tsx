@@ -12,58 +12,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { useState } from "react"
+import {useApp} from "@/context/AppContext";
 import { FiPlusCircle } from "react-icons/fi";
-import { offerSchema } from "@/lib/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner"
 
-export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (offer: any) => void, openState: boolean, setOpen: (open: boolean) => void }) {
-  const [form, setForm] = useState({
-    operator: "",
-    title: "",
-    description: "",
-    price: "",
-    ussd: "",
-    image: "" 
-  })
-  const [errors, setErrors] = useState({})
 
-  function handleChange(field: string, value: string) {
-    setForm(prev => ({ ...prev, [field]: value }))
-     setErrors(prev => ({ ...prev, [field]: undefined }))
-  }
 
-  function resetForm() {
-    setForm({
-      operator: "",
-      title: "",
-      description: "",
-      price: "",
-      ussd: "",
-      image: ""
-    })
-    setErrors({})
-  }
-
-  function handleSubmit() {
-    const result = offerSchema.safeParse(form)
-
-    if (!result.success) {
-    // Extract and show first error message
-   const fieldErrors = result.error.flatten().fieldErrors
-    setErrors(fieldErrors)
-    console.log(errors);
-    
-    // toast.error(firstError || "Invalid form input")
-    return
-  }
-    onCreate(form)
-    resetForm() 
-  }
+export function CreateOfferDialog() {
+  const {offerForm,errors, open, setOpen, handleSubmit, handleChange } = useApp();
 
   return (
-    <Dialog open={openState} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className='bg-[#0D5256]'><FiPlusCircle className="h-5 w-5" color="white"/>Create Offer</Button>
       </DialogTrigger>
@@ -81,7 +39,7 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
             <Label htmlFor="operator" className="text-right">
               Operator *
             </Label>
-            <Select value={form.operator} onValueChange={v => handleChange("operator", v)}>
+            <Select value={offerForm.operator} onValueChange={v => handleChange("operator", v)}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Choose operator" />
               </SelectTrigger>
@@ -102,7 +60,7 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
             </Label>
             <Input
               id="title"
-              value={form.title}
+              value={offerForm.title}
               onChange={e => handleChange("title", e.target.value)}
               className="col-span-3"
               placeholder="Title"
@@ -118,7 +76,7 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
             </Label>
             <Input
               id="description"
-              value={form.description}
+              value={offerForm.description}
               onChange={e => handleChange("description", e.target.value)}
               className="col-span-3"
               placeholder="Offer details"
@@ -135,7 +93,7 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
             <Input
               id="price"
               type="number"
-              value={form.price}
+              value={offerForm.price}
               onChange={e => handleChange("price", e.target.value)}
               className="col-span-3"
             />
@@ -150,7 +108,7 @@ export function CreateOfferDialog({ onCreate,openState,setOpen }: { onCreate: (o
             </Label>
             <Input
               id="ussd"
-              value={form.ussd}
+              value={offerForm.ussd}
               onChange={e => handleChange("ussd", e.target.value)}
               className="col-span-3"
             />

@@ -1,7 +1,7 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
 
-import { transactionSchema, TransactionInput } from "@/lib/validation";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { transactionSchema, TransactionInput, offerSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner"
@@ -16,11 +16,25 @@ interface AppContextType {
     setFilters: React.Dispatch<React.SetStateAction<any[]>>;
     page: number;
     setPage: React.Dispatch<React.SetStateAction<number>>;
+    offers: any[];
+    setOffers: React.Dispatch<React.SetStateAction<any[]>>;
+    activeFilter: string;
+    setActiveFilter: React.Dispatch<React.SetStateAction<string>>;
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    offerForm: any;
+    setOfferForm: React.Dispatch<React.SetStateAction<any>>;
+    errors: any;
+    setErrors: React.Dispatch<React.SetStateAction<any>>;
     onSubmit: (data: TransactionInput) => Promise<void>;
     form: ReturnType<typeof useForm<TransactionInput>>;
     detectOperators: () => Promise<void>;
     handleFilters: (filters: any) => void;
     handleClear: () => void;
+    onCreateOffer: (newOffer: any) => Promise<void>;
+    resetForm: () => void;
+    handleSubmit: () => void;
+    handleChange: (field: string, value: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -35,9 +49,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [operators, setOperators] = useState([])
   const [filters, setFilters] = useState<any[]>([]);
   const [page, setPage] = useState(1);
+  const [offers, setOffers] = useState([]); 
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const [open, setOpen] = useState(false);
+  const [offerForm, setOfferForm] = useState({
+    operator: "",
+    title: "",
+    description: "",
+    price: "",
+    ussd: "",
+    image: "" 
+  })
+  const [errors, setErrors] = useState({})
   
 
-  // Recharge form Dependencies
+  // top-up form Dependencies
 
     const form = useForm<TransactionInput>({
             resolver: zodResolver(transactionSchema),
@@ -121,6 +147,60 @@ export function AppProvider({ children }: { children: ReactNode }) {
         });
     };
 
+    // Offers Management Dependencies
+    const onCreateOffer = async (newOffer: any) => {
+    const toastId = toast.loading("Adding new offer...");
+    if (!newOffer.image) {
+      if (newOffer.operator === "Djezzy") {
+        newOffer.image = "/Djezzy-red.png"
+      } else if (newOffer.operator === "Ooredoo") {
+        newOffer.image = "/Ooredoo-white.png"
+      }else {
+        newOffer.image = "/Mobilis-white.png"
+      }
+    }
+    const addedOffer = await window.electronAPI.addOffer(newOffer)
+
+    if (addedOffer) {
+      toast.dismiss(toastId);
+      toast.success("Offer added successfully!");
+      setOffers((prevOffers) => [addedOffer,...prevOffers]);
+      setOpen(false);
+    } else {
+      toast.dismiss(toastId);
+      toast.error("Failed to add offer.");
+    }
+    }
+
+    function resetForm() {
+      setOfferForm({
+        operator: "",
+        title: "",
+        description: "",
+        price: "",
+        ussd: "",
+        image: ""
+      })
+      setErrors({})
+    }
+
+    function handleSubmit() {
+      const result = offerSchema.safeParse(offerForm)
+
+      if (!result.success) {
+    const fieldErrors = result.error.flatten().fieldErrors
+      setErrors(fieldErrors)
+      return
+    }
+      onCreateOffer(offerForm)
+      resetForm() 
+    }
+
+    function handleChange(field: string, value: string) {
+    setOfferForm(prev => ({ ...prev, [field]: value }))
+    setErrors(prev => ({ ...prev, [field]: undefined }))
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -132,11 +212,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setFilters,
         page,
         setPage,
+        offers,
+        setOffers,
+        activeFilter,
+        setActiveFilter,
+        open,
+        setOpen,
+        offerForm,
+        setOfferForm,
+        errors,
+        setErrors,
         onSubmit,
         form,
         detectOperators,
         handleFilters,
-        handleClear
+        handleClear,
+        onCreateOffer,
+        resetForm,
+        handleSubmit,
+        handleChange
       }}
     >
       {children}
