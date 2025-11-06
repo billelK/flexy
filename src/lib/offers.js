@@ -8,14 +8,36 @@ function getAllOffers() {
 
 function addOffer(offer) {
     const stmt = db.prepare("INSERT INTO offers (operator, title, description, price, ussd_code, image) VALUES (?, ?, ?, ?, ?, ?)");
-    const info = stmt.run(offer.operator, offer.title, offer.description, offer.price, offer.ussd, offer.image);
+    const info = stmt.run(offer.operator, offer.title, offer.description, offer.price, offer.ussd_code, offer.image);
     return { ...offer, id: info.lastInsertRowid };
 }
 
 function updateOffer(offer) {
-    const stmt = db.prepare("UPDATE offers SET operator = ?, title = ?, description = ?, price = ?, ussd_code = ?, image = ? WHERE id = ?");
-    const info = stmt.run(offer.operator, offer.title, offer.description, offer.price, offer.ussd, offer.image, offer.id);
-    return { ...offer };
+  const stmt = db.prepare(`
+    UPDATE offers
+    SET operator = ?, title = ?, description = ?, price = ?, ussd_code = ?, image = ?
+    WHERE id = ?
+  `);
+
+  const info = stmt.run(
+    offer.operator,
+    offer.title,
+    offer.description,
+    offer.price,
+    offer.ussd_code,
+    offer.image,
+    offer.id
+  );
+
+  
+
+
+  // ✅ Return the updated row from DB (fresh data)
+  const getStmt = db.prepare("SELECT * FROM offers WHERE id = ?");
+  const updatedOffer = getStmt.get(offer.id);
+
+  return updatedOffer;
 }
+
 
 export { getAllOffers, addOffer, updateOffer };

@@ -29,7 +29,7 @@ export const offerSchema = z.object({
   title: z.string().nonempty("Title is required"),
   description: z.string().nonempty("Description is required"),
   price: z.coerce.number().min(50, "Minimum price is 50 DA"),
-  ussd: z.string().nonempty("USSD code is required"),
+  ussd_code: z.string().nonempty("USSD code is required"),
 })
 
 export type TransactionInput = z.infer<typeof transactionSchema>;

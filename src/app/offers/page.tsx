@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { IoPencil } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
-
 import OffreCreationDialog from "@/components/OfferCreationDialog";
 
 
@@ -15,26 +14,19 @@ import OffreCreationDialog from "@/components/OfferCreationDialog";
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 
 export default function OffersPage() {
-   const {offers, setOffers, activeFilter, setActiveFilter} = useApp();
+   const {offers, setOffers, activeFilter, setActiveFilter, onEditOffer} = useApp();
 
-useEffect(() => {
-    window.electronAPI.getOffers().then((data) => {
-      setOffers(data);
-    });
-}, []);
+    useEffect(() => {
+        window.electronAPI.getOffers().then((data) => {
+          setOffers(data);
+        });
+    }, []);
 
-const filteredOffers =
-  activeFilter === "ALL"
-    ? offers
-    : offers.filter((offer) => offer.operator === activeFilter);
+    const filteredOffers =
+      activeFilter === "ALL"
+        ? offers
+        : offers.filter((offer) => offer.operator === activeFilter);
  
-
-const onUEditOffer = async (updatedOffer: any) => {
-  setForm()
-}
-    
-
-
   return (
     <Card className="flex flex-col h-full relative mx-auto p-5 mt-5 max-w-7xl w-screen border-[#C0D2D3] ">
       <CardHeader className='flex justify-between'>
@@ -93,7 +85,7 @@ const onUEditOffer = async (updatedOffer: any) => {
                 <div className="flex justify-between items-center">
                         <p className="text-[#1A7768] font-medium text-lg">{offer.price} DA</p>
                         <div className="flex gap-1">
-                            <IoPencil onClick={onUEditOffer} className="p-1 rounded-full cursor-pointer transition-all duration-200
+                            <IoPencil onClick={() => onEditOffer(offer)} className="p-1 rounded-full cursor-pointer transition-all duration-200
                                                 hover:scale-110 active:scale-95 w-7 h-7 " color='#1A7768'/>
                             <RiDeleteBinLine className="p-1 rounded-full cursor-pointer transition-all duration-200
                                                 hover:scale-110 active:scale-95 w-7 h-7" color='#EF4444'/>

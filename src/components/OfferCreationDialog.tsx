@@ -14,21 +14,35 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import {useApp} from "@/context/AppContext";
 import { FiPlusCircle } from "react-icons/fi";
+import { useEffect } from "react"
+import FileUploader from "@/components/FileUploader"
 
 
 
 export function CreateOfferDialog() {
-  const {offerForm,errors, open, setOpen, handleSubmit, handleChange } = useApp();
+  const {offerForm, resetForm, errors, open, setOpen, handleSubmit, handleChange, isCreation, setIsCreation } = useApp();
 
+  const onCreate = () => { 
+    if (!isCreation) {
+      setIsCreation(true)
+    }
+  }
+
+  useEffect(() => {
+    if (!open) {
+      resetForm()
+    }
+  }, [open]);
+  
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='bg-[#0D5256]'><FiPlusCircle className="h-5 w-5" color="white"/>Create Offer</Button>
+        <Button onClick={onCreate} className='bg-[#0D5256]'><FiPlusCircle className="h-5 w-5" color="white"/>Create Offer</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-[#0D5256]">Create New Offer</DialogTitle>
+          <DialogTitle className="text-[#0D5256]"> {isCreation? "Create new Offer": "Update Offer"}</DialogTitle>
           <DialogDescription>
             Add a new offer, fields marked with * are required.
           </DialogDescription>
@@ -107,44 +121,31 @@ export function CreateOfferDialog() {
               USSD Code *
             </Label>
             <Input
-              id="ussd"
-              value={offerForm.ussd}
-              onChange={e => handleChange("ussd", e.target.value)}
+              id="ussd_code"
+              value={offerForm.ussd_code}
+              onChange={e => handleChange("ussd_code", e.target.value)}
               className="col-span-3"
             />
-            {errors.ussd && (
-            <p className="col-span-4 text-sm text-red-500 text-right">{errors.ussd}</p>
+            {errors.ussd_code && (
+            <p className="col-span-4 text-sm text-red-500 text-right">{errors.ussd_code}</p>
           )}
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">
-                Image
-            </Label>
-            <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) {
-                    const reader = new FileReader()
-                    reader.onload = (ev) => {
-                    handleChange("image", ev.target?.result as string) // store Base64 or blob URL
-                    }
-                    reader.readAsDataURL(file)
-                }
-                }}
-                className="col-span-3"
-                
-            />
-            
+            <Label className="text-left text-sm font-medium">Image</Label>
+            <div className="col-span-2">
+              <FileUploader
+                value={offerForm.image}
+                operator={offerForm.operator}
+                onChange={(img) => handleChange("image", img)}
+              />
+            </div>
           </div>
-        </div>
+      </div>
 
         <DialogFooter className="flex justify-between ">
             <DialogClose asChild>
-                <Button className="hover:bg-[#C0D2D3]" variant="outline" data-slot="dialog-close"> Cancel </Button>
+                <Button onClick={() => {resetForm()}} className="hover:bg-[#C0D2D3]" variant="outline" data-slot="dialog-close"> Cancel </Button>
             </DialogClose>
             
             <div className="min-w-[260px]"></div>

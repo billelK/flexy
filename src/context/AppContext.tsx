@@ -26,6 +26,11 @@ interface AppContextType {
     setOfferForm: React.Dispatch<React.SetStateAction<any>>;
     errors: any;
     setErrors: React.Dispatch<React.SetStateAction<any>>;
+    isCreation: boolean;
+    setIsCreation: React.Dispatch<React.SetStateAction<boolean>>;
+    offerToUpdate: any;
+    setOfferToUpdate: React.Dispatch<React.SetStateAction<any>>;
+
     onSubmit: (data: TransactionInput) => Promise<void>;
     form: ReturnType<typeof useForm<TransactionInput>>;
     detectOperators: () => Promise<void>;
@@ -35,6 +40,7 @@ interface AppContextType {
     resetForm: () => void;
     handleSubmit: () => void;
     handleChange: (field: string, value: string) => void;
+    onEditOffer: (updatedOffer: any) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -57,12 +63,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     title: "",
     description: "",
     price: "",
-    ussd: "",
+    ussd_code: "",
     image: "" 
   })
   const [errors, setErrors] = useState({})
+  const [isCreation, setIsCreation] = useState(true);
+  const [offerToUpdate, setOfferToUpdate] = useState<any>(null);
   
-
   // top-up form Dependencies
 
     const form = useForm<TransactionInput>({
@@ -149,27 +156,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     // Offers Management Dependencies
     const onCreateOffer = async (newOffer: any) => {
-    const toastId = toast.loading("Adding new offer...");
-    if (!newOffer.image) {
-      if (newOffer.operator === "Djezzy") {
-        newOffer.image = "/Djezzy-red.png"
-      } else if (newOffer.operator === "Ooredoo") {
-        newOffer.image = "/Ooredoo-white.png"
-      }else {
-        newOffer.image = "/Mobilis-white.png"
-      }
-    }
-    const addedOffer = await window.electronAPI.addOffer(newOffer)
+      const toastId = toast.loading("Adding new offer...");
+      if (!newOffer.image) {
+          if (newOffer.operator === "Djezzy") {
+            newOffer.image = "/Djezzy-red.png"
+          } else if (newOffer.operator === "Ooredoo") {
+            newOffer.image = "/Ooredoo-white.png"
+          }else {
+            newOffer.image = "/Mobilis-white.png"
+          }
+        }
+      const addedOffer = await window.electronAPI.addOffer(newOffer)
 
-    if (addedOffer) {
-      toast.dismiss(toastId);
-      toast.success("Offer added successfully!");
-      setOffers((prevOffers) => [addedOffer,...prevOffers]);
-      setOpen(false);
-    } else {
-      toast.dismiss(toastId);
-      toast.error("Failed to add offer.");
-    }
+      if (addedOffer) {
+        toast.dismiss(toastId);
+        toast.success("Offer added successfully!");
+        setOffers((prevOffers) => [addedOffer,...prevOffers]);
+        setOpen(false);
+      } else {
+        toast.dismiss(toastId);
+        toast.error("Failed to add offer.");
+      }
     }
 
     function resetForm() {
@@ -178,7 +185,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         title: "",
         description: "",
         price: "",
-        ussd: "",
+        ussd_code: "",
         image: ""
       })
       setErrors({})
@@ -188,18 +195,56 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const result = offerSchema.safeParse(offerForm)
 
       if (!result.success) {
-    const fieldErrors = result.error.flatten().fieldErrors
-      setErrors(fieldErrors)
-      return
+        const fieldErrors = result.error.flatten().fieldErrors
+        setErrors(fieldErrors)
+        return
+      }
+
+      if (isCreation) {
+        onCreateOffer(offerForm)
+        resetForm() 
+      } else { 
+        onUpdateOffer({id: offerToUpdate.id, ...offerForm})
+      }
+      
     }
-      onCreateOffer(offerForm)
-      resetForm() 
+
+    const onUpdateOffer = async (updatedOffer: any) => {
+      
+      const toastId = toast.loading("Updating offer...");
+      const result = await window.electronAPI.updateOffer(updatedOffer)
+      
+      if (result) {
+        toast.dismiss(toastId);
+        toast.success("Offer updated successfully!");
+        setOffers((prevOffers) => prevOffers.map((offer) => offer.id === result.id ? result : offer));
+        setOpen(false);
+      } else {
+        toast.dismiss(toastId);
+        toast.error("Failed to update offer.");
+      }
+    }
+
+    const onEditOffer = (clickedOffer: any) => {
+      
+      setIsCreation(false)
+      setOfferForm({operator: clickedOffer.operator,
+                    title: clickedOffer.title,
+                    description: clickedOffer.description,
+                    price: clickedOffer.price,
+                    ussd_code: clickedOffer.ussd_code,
+                    image: clickedOffer.image
+                  })
+      setOfferToUpdate(clickedOffer)
+      
+      
+      setOpen(true)
     }
 
     function handleChange(field: string, value: string) {
-    setOfferForm(prev => ({ ...prev, [field]: value }))
-    setErrors(prev => ({ ...prev, [field]: undefined }))
-  }
+      setOfferForm(prev => ({ ...prev, [field]: value }))
+      setErrors(prev => ({ ...prev, [field]: undefined }))
+    }
 
   return (
     <AppContext.Provider
@@ -222,6 +267,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setOfferForm,
         errors,
         setErrors,
+        isCreation,
+        setIsCreation,
+
         onSubmit,
         form,
         detectOperators,
@@ -230,7 +278,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         onCreateOffer,
         resetForm,
         handleSubmit,
-        handleChange
+        handleChange, 
+        onEditOffer
       }}
     >
       {children}
