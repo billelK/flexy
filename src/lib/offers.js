@@ -29,9 +29,6 @@ function updateOffer(offer) {
     offer.id
   );
 
-  
-
-
   // ✅ Return the updated row from DB (fresh data)
   const getStmt = db.prepare("SELECT * FROM offers WHERE id = ?");
   const updatedOffer = getStmt.get(offer.id);
@@ -39,5 +36,10 @@ function updateOffer(offer) {
   return updatedOffer;
 }
 
+function deleteOffer(id) {
+  const stmt = db.prepare("DELETE FROM offers WHERE id = ?");
+  const info = stmt.run(id);
+  return info.changes > 0; // returns true if a row was deleted
+}
 
-export { getAllOffers, addOffer, updateOffer };
+export { getAllOffers, addOffer, updateOffer, deleteOffer };

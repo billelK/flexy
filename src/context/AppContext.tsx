@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner"
 
+
 // Define the types for better autocomplete
 interface AppContextType {
     transactions: Transaction[];
@@ -41,6 +42,7 @@ interface AppContextType {
     handleSubmit: () => void;
     handleChange: (field: string, value: string) => void;
     onEditOffer: (updatedOffer: any) => void;
+    onDeleteOffer: (id: number) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -246,6 +248,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }
 
+    const onDeleteOffer = async(id: number) => {
+      const toastId = toast.loading("Deleting offer...");
+      const result = await window.electronAPI.deleteOffer(id)
+      if (result) {
+        toast.dismiss(toastId);
+        toast.success("Offer deleted successfully!");
+        setOffers((prevOffers) => prevOffers.filter((offer) => offer.id !== id));
+      } else {
+        toast.dismiss(toastId);
+        toast.error("Failed to delete offer.");
+      }
+    }
+
+
   return (
     <AppContext.Provider
       value={{
@@ -279,7 +295,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         resetForm,
         handleSubmit,
         handleChange, 
-        onEditOffer
+        onEditOffer,
+        onDeleteOffer
       }}
     >
       {children}

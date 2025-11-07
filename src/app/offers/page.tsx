@@ -14,7 +14,7 @@ import OffreCreationDialog from "@/components/OfferCreationDialog";
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 
 export default function OffersPage() {
-   const {offers, setOffers, activeFilter, setActiveFilter, onEditOffer} = useApp();
+   const {offers, setOffers, activeFilter, setActiveFilter, onEditOffer, onDeleteOffer} = useApp();
 
     useEffect(() => {
         window.electronAPI.getOffers().then((data) => {
@@ -87,7 +87,7 @@ export default function OffersPage() {
                         <div className="flex gap-1">
                             <IoPencil onClick={() => onEditOffer(offer)} className="p-1 rounded-full cursor-pointer transition-all duration-200
                                                 hover:scale-110 active:scale-95 w-7 h-7 " color='#1A7768'/>
-                            <RiDeleteBinLine className="p-1 rounded-full cursor-pointer transition-all duration-200
+                            <RiDeleteBinLine onClick={() => onDeleteOffer(offer.id)} className="p-1 rounded-full cursor-pointer transition-all duration-200
                                                 hover:scale-110 active:scale-95 w-7 h-7" color='#EF4444'/>
                         </div>
                 </div>
