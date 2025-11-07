@@ -3,6 +3,7 @@
 import RechargeForm from "@/components/RechargeForm";
 import ModemDetection from "@/components/ModemDetection";
 import TransactionsHistory from "@/components/TransactionsHistory";
+import RecentOffers from "@/components/RecentOffers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Page() {
@@ -35,7 +36,7 @@ export default function Page() {
             </p>
             </CardHeader>
           <CardContent>
-            
+              <RecentOffers/>
           </CardContent>
         </Card>
       </div>
