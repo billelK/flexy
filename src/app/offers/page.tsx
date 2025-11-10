@@ -57,7 +57,7 @@ export default function OffersPage() {
 
       {/* Scrollable Offers Section */}
       <div className="flex-1 overflow-y-auto pr-2 scrollable">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 cursor-pointer p-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 cursor-pointer p-3">
           {filteredOffers.map((offer) => (
             <div
               key={offer.id}

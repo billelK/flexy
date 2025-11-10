@@ -4,7 +4,6 @@ import RechargeForm from "@/components/RechargeForm";
 import ModemDetection from "@/components/ModemDetection";
 import TransactionsHistory from "@/components/TransactionsHistory";
 import RecentOffers from "@/components/RecentOffers";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Page() {
 
@@ -28,17 +27,7 @@ export default function Page() {
       </div>
 
       <div className="flex-1 ">
-        <Card className="h-full mx-4 border-[#C0D2D3]">
-          <CardHeader>
-            <CardTitle className="text-[#0D5256]">Recent Offers</CardTitle>
-            <p className="text-sm text-gray-500">
-              Check out our latest offers and promotions on mobile recharges!
-            </p>
-            </CardHeader>
-          <CardContent>
               <RecentOffers/>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

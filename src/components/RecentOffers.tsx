@@ -1,7 +1,9 @@
 import React,{useEffect} from 'react'
 import { useApp } from '@/context/AppContext';
 import Image from "next/image";
-import { CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from 'next/link';
 
 function RecentOffers() {
 const {offers, setOffers} = useApp();
@@ -19,11 +21,29 @@ useEffect(() => {
 
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 cursor-pointer">
+    <Card className="mb-4 mx-4 border-[#C0D2D3]">
+          <CardHeader className='flex justify-between'>
+            <div>
+                <CardTitle className="text-[#0D5256]">Recent Offers</CardTitle>
+                <p className="md:text-sm text-gray-500">
+              Check out our latest offers and promotions on mobile recharges!
+            </p>
+            </div>
+            
+             <div>
+                <Button className='w-full bg-[#0D5256]'>
+                   <Link href={"/offers"}>
+                   View All 
+                   </Link>
+                </Button>
+              </div>
+            </CardHeader>
+          <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 cursor-pointer">
           {filteredOffers.map((offer) => (
             <div
               key={offer.id}
-              className="rounded-2xl overflow-hidden border border-[#C0D2D3]/40 shadow-sm hover:shadow-md hover:-translate-y-1 transition-transform bg-[#f9fafb]"
+              className="rounded-2xl overflow-hidden border border-[#C0D2D3]/40 shadow-sm hover:shadow-md hover:-translate-y-1 transition-transform bg-[#f9fafb] "
             >
               {/* Image banner */}
               <div className="relative w-full h-35 bg-white">
@@ -38,7 +58,7 @@ useEffect(() => {
               
 
               {/* Offer details */}
-              <CardContent className="flex text-start py-6 w-full justify-between">
+              <CardContent className="flex text-start py-4 justify-between">
                 <div>
                     <h2 className="font-semibold">
                         {offer.title}
@@ -52,7 +72,10 @@ useEffect(() => {
               </CardContent>
             </div>
           ))}
-        </div>
+    </div>
+          </CardContent>
+    </Card>
+    
   )
 }
 

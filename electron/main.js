@@ -12,11 +12,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow = null;
+const midRangeLaptops = { width: 1536, height: 864 };
+const midSizeMonitors = { width: 1440, height: 900 }; // 100%
+const smallLaptopScreen = { width: 1366, height: 768 }; // 100%
+const compactLaptop = { width: 1280, height: 800 }; // 90%
+const HDmonitors = { width: 1280, height: 720 };// 90%
+const tabletOldMonitors = { width: 1024, height: 768 }; // 50 - 50
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 1440,
-    height: 900,
+    width: compactLaptop.width,
+    height: compactLaptop.height,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,

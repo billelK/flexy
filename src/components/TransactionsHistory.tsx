@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 function TransactionsHistory() {
     const {transactions,setTransactions} = useApp();
 
-    const pageSize = 8;
+    const pageSize = 10;
     const paginated = transactions.slice(0, pageSize)
     
     useEffect(() => {
@@ -23,11 +23,11 @@ function TransactionsHistory() {
     }, []);
 
   return (
-    <Card className="flex-[2] flex flex-col relative border-[#C0D2D3]">
+    <Card className="h-[550px] flex-[2] flex flex-col relative border-[#C0D2D3]">
             <CardHeader className='flex justify-between'>
               <div>
                 <CardTitle className='text-[#0D5256]'>Transactions History</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="md:text-sm text-gray-500 mt-1">
                       View recent recharge transactions.
                   </p>
               </div>
@@ -40,7 +40,7 @@ function TransactionsHistory() {
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
+              <Table className='h-[250px]'>
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>

@@ -7,12 +7,14 @@ import TransactionFilters from "@/components/Filters";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationControls } from "@/components/pagination";
 import { usePathname } from "next/navigation";
+import { useBreakpoint } from '@/lib/useBreakpoint';
 
 
 function FullHistory() {
     const {transactions,handleFilters,handleClear,filters, setFilters, page, setPage} = useApp();
     const pathname = usePathname();
-    const pageSize = 10;
+    const bp = useBreakpoint();
+    const pageSize = bp === "xl"? 7: bp ==="2xl" ? 15 :5;
     const totalPages = Math.ceil(transactions.length / pageSize);
     const paginated = transactions.slice((page - 1) * pageSize, page * pageSize);
 
@@ -32,7 +34,7 @@ function FullHistory() {
             }
     }, [pathname])
   return (
-    <Card className="flex flex-col h-full relative min-h-[725px] mx-auto mt-5 max-w-7xl w-screen  border-[#C0D2D3] overflow-hidden ">
+    <Card className="flex flex-col h-full relative max-h-[calc(100vh-6rem)] mx-auto p-5 mt-4 max-w-7xl w-screen  border-[#C0D2D3] overflow-hidden ">
             <CardHeader className='flex justify-between'>
               <div>
                 <CardTitle className='text-[#0D5256] text-xl'>Transactions History</CardTitle>
@@ -41,7 +43,7 @@ function FullHistory() {
                   </p>
               </div>
             </CardHeader>
-            <CardContent className='flex-1 overflow-visible'>
+            <CardContent className='flex-1 overflow-visible '>
               <TransactionFilters handleClear={handleClear} onFilter={setFilters}/>
               <Table>
                 <TableHeader>

@@ -145,7 +145,7 @@ export function CreateOfferDialog() {
 
         <DialogFooter className="flex justify-between ">
             <DialogClose asChild>
-                <Button onClick={() => {resetForm()}} className="hover:bg-[#C0D2D3]" variant="outline" data-slot="dialog-close"> Cancel </Button>
+                <Button onClick={() => {resetForm()}} className="hover:bg-[#f4f4f5]" variant="outline" data-slot="dialog-close"> Cancel </Button>
             </DialogClose>
             
             <div className="min-w-[260px]"></div>
