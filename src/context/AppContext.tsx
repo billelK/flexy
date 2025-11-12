@@ -184,7 +184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             if (filters.date) {
                 filtered = filtered.filter((t) => {
                 const txDate = new Date(t.created_at);
-                return txDate.toDateString() === new Date(filters.date).toDateString();
+                return txDate.toDateString() === new Date(filters.date!).toDateString();
                 });
             }
             

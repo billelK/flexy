@@ -8,7 +8,7 @@ declare global {
       getOffers: () => Promise<[]>;
 
       detectOperators: () => Promise<[]>;
-      saveOperators: (operators: boolean) => Promise<void>;
+      saveOperators: (operators: Operators[]) => Promise<boolean>;
       /* eslint-disable*/
       readOperators: () => Promise<any>;
       addTransaction: () => Promise<number>;
