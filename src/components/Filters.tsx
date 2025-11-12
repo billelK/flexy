@@ -6,13 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format, set } from "date-fns";
+import { format} from "date-fns";
+import { Transaction } from "better-sqlite3";
+
+interface FilterData {
+    phone: string;
+    operator: string;
+    date: Date | undefined;
+}
 
 export default function TransactionFilters({ 
   onFilter,
   handleClear
 }:{ 
-  onFilter: (filters: any) => void 
+  onFilter: (filters: FilterData) => void 
   handleClear: () => void
 }) {
 

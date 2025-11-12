@@ -9,10 +9,10 @@ function RecentOffers() {
 const {offers, setOffers} = useApp();
 
 useEffect(() => {
-    window.electronAPI.getOffers().then((offers:any) => {
+    window.electronAPI.getOffers().then((offers:[]) => {
         setOffers(offers);
     })      
-}, []);
+}, [setOffers]);
 
     const filteredOffers = offers.slice(0, 4); // Get the 4 most recent offers
     

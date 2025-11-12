@@ -32,6 +32,7 @@ export function CreateOfferDialog() {
     if (!open) {
       resetForm()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
   
   return (

@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 
 
+
 function TransactionsHistory() {
     const {transactions,setTransactions} = useApp();
 
@@ -20,7 +21,7 @@ function TransactionsHistory() {
         setTransactions(tx);
       }
           loadData()
-    }, []);
+    }, [setTransactions]);
 
   return (
     <Card className="h-[550px] flex-[2] flex flex-col relative border-[#C0D2D3]">

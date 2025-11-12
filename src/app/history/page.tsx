@@ -11,7 +11,7 @@ import { useBreakpoint } from '@/lib/useBreakpoint';
 
 
 function FullHistory() {
-    const {transactions,handleFilters,handleClear,filters, setFilters, page, setPage} = useApp();
+    const {transactions,handleFilters,handleClear,filters, setFilters, page, setPage, setTransactions} = useApp();
     const pathname = usePathname();
     const bp = useBreakpoint();
     const pageSize = bp === "xl"? 8: bp ==="2xl" ? 15 :8;
@@ -21,18 +21,20 @@ function FullHistory() {
     
     useEffect(() => {
         handleFilters(filters);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
-    useEffect(() => {
-            return () => {
-              if (pathname === "/history") {
-                  // setPage(1)
-                  window.electronAPI.getTransactions().then((data) => {
-                  setFilters(data) 
-                });
-              }
-            }
-    }, [pathname])
+    // useEffect(() => {
+    //         return () => {
+    //           if (pathname === "/history") {
+    //               window.electronAPI.getTransactions().then((data) => {
+                  
+    //               setTransactions(data); 
+    //             });
+    //           }
+    //         }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [pathname])
   return (
     <Card className="flex flex-col relative max-h-[calc(100vh-6rem)] mx-auto p-5 mt-4 xl:max-w-7xl w-screen lg:max-w-6xl  border-[#C0D2D3] overflow-hidden ">
             <CardHeader className='flex justify-between'>

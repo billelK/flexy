@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react'
+import React,{useEffect,useState} from 'react'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApp } from "@/context/AppContext";
@@ -6,14 +6,20 @@ import { PiPlugsConnected } from "react-icons/pi";
 import { TbPlugConnected } from "react-icons/tb";
 import { LuRefreshCw } from "react-icons/lu";
 
-
+interface Operator {
+    operator: string;
+    port: string;
+    manufacturer: string;
+}
 
 function ModemDetection() {
-const {operators, detectOperators} = useApp();
+const {operators, detectOperators, detectModemsOnce} = useApp();
+
 
   
    useEffect(() => {
-    detectOperators()
+    detectModemsOnce()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
         <Card className="h-full border-[#C0D2D3] ">
@@ -37,7 +43,7 @@ const {operators, detectOperators} = useApp();
             <CardContent>
                 <div className="space-y-3">
                 {["Mobilis", "Ooredoo", "Djezzy"].map((operator) => {
-                    const found = operators.find((op) => op.operator === operator);
+                    const found = operators.find((op: Operator) => op.operator === operator);
                     const isOnline =
                     found && found.operator !== "Unknown" && found.operator !== "Error";
 

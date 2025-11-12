@@ -33,7 +33,7 @@ export async function detectOperators() {
         operator,
       });
     } catch (e) {
-      results.push({ path: info.path, operator: "Error" });
+      results.push({ path: info.path, operator: "Error", error: e.message } );
     }
   }
   return results;
@@ -137,8 +137,8 @@ export async function performRecharge(transaction) {
 
       // cleanup
       function cleanup() {
-        try { parser.off("data", onData); } catch (e) {}
-        try { port.off("error", onError); } catch (e) {}
+        try { parser.off("data", onData); } catch (e) {return {error: e}}
+        try { port.off("error", onError); } catch (e) {return {error: e}}
       }
 
       // attach handlers
@@ -167,7 +167,7 @@ export async function performRecharge(transaction) {
     });
 
     // close port (best-effort)
-    try { if (port && port.isOpen) port.close(); } catch (e) {}
+    try { if (port && port.isOpen) port.close(); } catch (e) {return {error: e}}
 
     // interpret response
     if (response.code === "OK") {
@@ -208,7 +208,7 @@ export async function performRecharge(transaction) {
     }
   } catch (err) {
     console.error("Recharge failed (outer):", err);
-    try { if (port && port.isOpen) port.close(); } catch (e) {}
+    try { if (port && port.isOpen) port.close(); } catch (e) {return {error: e}}
     return {
       ...transaction,
       status: "Failed",

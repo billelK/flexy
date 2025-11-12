@@ -10,21 +10,24 @@ import { toast } from "sonner"
 // Define the types for better autocomplete
 interface AppContextType {
     transactions: Transaction[];
-    setTransactions: React.Dispatch<React.SetStateAction<any[]>>;
-    operators: string | null;
-    setOperators: (op: [] | null) => void;
-    filters: any[];
-    setFilters: React.Dispatch<React.SetStateAction<any[]>>;
+    setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
+    operators: Operator[]; 
+    setOperators: React.Dispatch<React.SetStateAction<Operator[]>>;
+    filters: FilterData;
+    setFilters: React.Dispatch<React.SetStateAction<FilterData>>;
     page: number;
     setPage: React.Dispatch<React.SetStateAction<number>>;
-    offers: any[];
-    setOffers: React.Dispatch<React.SetStateAction<any[]>>;
+    offers: offer[];
+    setOffers: React.Dispatch<React.SetStateAction<offer[]>>;
     activeFilter: string;
     setActiveFilter: React.Dispatch<React.SetStateAction<string>>;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    offerForm: any;
-    setOfferForm: React.Dispatch<React.SetStateAction<any>>;
+    offerForm: offerForm;
+    setOfferForm: React.Dispatch<React.SetStateAction<offerForm>>;
+    modemsChecked: boolean;
+    setModemsChecked: React.Dispatch<React.SetStateAction<boolean>>;
+    /* eslint-disable */
     errors: any;
     setErrors: React.Dispatch<React.SetStateAction<any>>;
     isCreation: boolean;
@@ -35,7 +38,7 @@ interface AppContextType {
     onSubmit: (data: TransactionInput) => Promise<void>;
     form: ReturnType<typeof useForm<TransactionInput>>;
     detectOperators: () => Promise<void>;
-    handleFilters: (filters: any) => void;
+    handleFilters: (filters: FilterData) => void;
     handleClear: () => void;
     onCreateOffer: (newOffer: any) => Promise<void>;
     resetForm: () => void;
@@ -43,6 +46,7 @@ interface AppContextType {
     handleChange: (field: string, value: string) => void;
     onEditOffer: (updatedOffer: any) => void;
     onDeleteOffer: (id: number) => Promise<void>;
+    detectModemsOnce: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -52,10 +56,41 @@ type Transaction = TransactionInput & {
   created_at: string;
 };
 
+interface offer {
+  id: number;
+  operator: string;
+  title: string;
+  description: string;
+  price: number;
+  ussd_code: string;
+  image: string;
+}
+
+type offerForm = {
+  operator: string;
+  title: string;
+  description: string;
+  price: number;
+  ussd_code: string;
+  image: string;
+}
+
+interface FilterData {
+    phone: string;
+    operator: string;
+    date: Date | undefined
+}
+
+interface Operator {
+    operator: string;
+    port: string;
+    manufacturer: string;
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [operators, setOperators] = useState([])
-  const [filters, setFilters] = useState<any[]>([]);
+  const [operators, setOperators] = useState<Operator[]>([]);
+  const [filters, setFilters] = useState<FilterData>({ phone: "", operator: "", date: undefined });
   const [page, setPage] = useState(1);
   const [offers, setOffers] = useState([]); 
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -71,6 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [errors, setErrors] = useState({})
   const [isCreation, setIsCreation] = useState(true);
   const [offerToUpdate, setOfferToUpdate] = useState<any>(null);
+  const [modemsChecked, setModemsChecked] = useState<boolean>(false);
   
   // top-up form Dependencies
 
@@ -127,8 +163,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
             await window.electronAPI.saveOperators(result);
     }
 
+    async function detectModemsOnce() {
+        if (modemsChecked) return; 
+        detectOperators()
+        setModemsChecked(true);
+      }
+
     // Transactions History Dependencies
-    const handleFilters = (filters: any) => {
+    const handleFilters = (filters: FilterData) => {
+            
             window.electronAPI.getTransactions().then((data: Transaction[]) => {
             let filtered = data
 
@@ -144,6 +187,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 return txDate.toDateString() === new Date(filters.date).toDateString();
                 });
             }
+            
             setPage(1);
             setTransactions(filtered);
             })
@@ -285,6 +329,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setErrors,
         isCreation,
         setIsCreation,
+        modemsChecked,
+        setModemsChecked,
 
         onSubmit,
         form,
@@ -296,7 +342,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         handleSubmit,
         handleChange, 
         onEditOffer,
-        onDeleteOffer
+        onDeleteOffer,
+        detectModemsOnce
+
+        
       }}
     >
       {children}

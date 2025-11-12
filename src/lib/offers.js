@@ -19,7 +19,7 @@ function updateOffer(offer) {
     WHERE id = ?
   `);
 
-  const info = stmt.run(
+  stmt.run(
     offer.operator,
     offer.title,
     offer.description,

@@ -17,8 +17,8 @@ export default function OffersPage() {
     window.electronAPI.getOffers().then((data) => {
       setOffers(data);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const filteredOffers =
     activeFilter === "ALL"
       ? offers
