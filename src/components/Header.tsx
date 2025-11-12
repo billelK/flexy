@@ -17,7 +17,7 @@ function Header() {
     ];
 
   return (
-    <header className="bg-white h-15 border-b border-[#C0D2D3] flex items-center p-2 shadow-s overflow-hidden flex-1 sticky top-0 z-10">
+    <header className="bg-white h-15 border-b border-[#C0D2D3] flex items-center p-2 shadow-s overflow-visible flex-1 sticky top-0 z-10">
         <div className="flex flex-1 items-center p-2">
           <Image src="/title-logo.png" alt="Logo" width={16} height={16} className="inline-block mr-2 w-auto"/>
           <h1 className="font-medium text-xl ">FLEXY PAY</h1>

@@ -1,7 +1,8 @@
+// layout.tsx 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner"
-import { AppProvider } from "@/context/AppContext";
+import { AppProvider } from "@/context/AppContext"; 
 import Header from "@/components/Header";
 import "./globals.css";
 
@@ -28,14 +29,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full flex flex-col bg-gray-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100%] flex flex-col bg-gray-50 `}
       >
         <Toaster position="top-center" richColors />
         
-        <AppProvider>
-        <Header/>
-        {children}
+        {/* AppProvider wraps everything that needs context */}
+        <AppProvider> 
+          <Header/>
+          <div className="flex-1 overflow-y-auto scrollable">
+            {children}
+          </div>
         </AppProvider>
+        
       </body>
     </html>
   );

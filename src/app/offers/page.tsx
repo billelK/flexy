@@ -25,7 +25,7 @@ export default function OffersPage() {
       : offers.filter((offer) => offer.operator === activeFilter);
 
   return (
-    <Card className="flex flex-col max-h-[calc(100vh-6rem)] relative mx-auto p-5 mt-4 max-w-7xl w-full border-[#C0D2D3] overflow-hidden">
+    <Card className="flex flex-col max-h-[calc(100vh-6rem)] lg:max-w-6xl relative mx-auto p-5 mt-4 xl:max-w-7xl w-full border-[#C0D2D3] overflow-hidden">
       {/* Header + Filters (fixed area) */}
       <CardHeader className="flex justify-between flex-shrink-0">
         <div>
@@ -64,7 +64,7 @@ export default function OffersPage() {
               className="rounded-2xl overflow-hidden border border-[#C0D2D3]/40 shadow-sm hover:shadow-md hover:-translate-y-1 transition-transform bg-[#f9fafb] "
             >
               {/* Image banner */}
-              <div className="relative w-full h-36 bg-white">
+              <div className="relative w-full h-28 bg-white">
                 <Image
                   src={offer.image}
                   alt={offer.title}
@@ -103,27 +103,7 @@ export default function OffersPage() {
             </div>
           ))}
         </div>
-        <style jsx>{`
-        .scrollable::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .scrollable::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        .scrollable::-webkit-scrollbar-thumb {
-          background-color: transparent;
-          border-radius: 8px;
-          transition: background-color 0.3s ease, opacity 0.3s ease;
-          opacity: 0;
-        }
-
-        .scrollable:hover::-webkit-scrollbar-thumb {
-          background-color: #c0d2d3;
-          opacity: 1;
-        }
-      `}</style>
+      
       </div>
     </Card>
   );

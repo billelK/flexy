@@ -1,3 +1,4 @@
+// page.tsx
 "use client";
 
 import RechargeForm from "@/components/RechargeForm";
@@ -8,9 +9,11 @@ import RecentOffers from "@/components/RecentOffers";
 export default function Page() {
 
   return (
-    <div className="flex flex-col flex-1 h-screen">
+    // Remove flex-1 and h-screen from here. Use min-h-full so content can grow if needed.
+    <div className="flex flex-col min-h-full "> 
       
-      <div className=" flex flex-1 gap-4 p-4 overflow-hidden">
+      {/* Remove overflow-hidden from this inner div */}
+      <div className="flex flex-1 gap-4 p-4">
       
         {/* Left Form */}
         <div className="flex-1 flex flex-col">

@@ -15,7 +15,7 @@ const RechargeForm = () => {
         <Card className='h-full border-[#C0D2D3]'>
             <CardHeader>
             <CardTitle className='text-[#0D5256]'>Recharge Form</CardTitle>
-                <p className="md:text-sm text-gray-500 mt-1">
+                <p className="xl:text-sm text-[12px] text-gray-500">
                     Enter details and submit.
                 </p>
             </CardHeader>

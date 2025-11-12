@@ -27,7 +27,7 @@ function TransactionsHistory() {
             <CardHeader className='flex justify-between'>
               <div>
                 <CardTitle className='text-[#0D5256]'>Transactions History</CardTitle>
-                  <p className="md:text-sm text-gray-500 mt-1">
+                  <p className="xl:text-sm text-[12px] text-gray-500 mt-1">
                       View recent recharge transactions.
                   </p>
               </div>

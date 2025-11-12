@@ -120,3 +120,42 @@
     @apply bg-background text-foreground;
   }
 }
+/* globals.css */
+
+/* Add these styles to the bottom of your file */
+/* Apply custom scrollbar styles globally to all elements */
+*::-webkit-scrollbar {
+  width: 8px; /* Adjust width as needed */
+  height: 8px; /* For horizontal scrollbars */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  /* Use a standard background color or a CSS variable from your theme */
+  background-color: var(--muted, #c0d2d3); /* Using a theme variable with a fallback */
+  border-radius: 8px;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  opacity: 0.7; /* Make it slightly transparent when not hovered */
+}
+
+/* Change thumb color on hover */
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--foreground, #888); /* A different color on hover */
+  opacity: 1;
+}
+
+/* Standard CSS for Firefox (global application) */
+* {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: var(--muted, #1f797e) transparent; /* thumb and track color */
+}
+
+/* Ensure the main body also uses these styles */
+body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+

@@ -4,26 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApp } from "@/context/AppContext";
 import { PiPlugsConnected } from "react-icons/pi";
 import { TbPlugConnected } from "react-icons/tb";
+import { LuRefreshCw } from "react-icons/lu";
+
 
 
 function ModemDetection() {
-const {operators,setOperators, detectOperators} = useApp();
+const {operators, detectOperators} = useApp();
 
- const loadSavedOperators = async () => { // not using this anymore
-    const saved = await window.electronAPI.readOperators()
-    setOperators(saved)
-  }
-
+  
    useEffect(() => {
-    loadSavedOperators() // not using this anymore
-    // detectOperators()
+    detectOperators()
   }, [])
   return (
-        <Card className="h-full border-[#C0D2D3]">
+        <Card className="h-full border-[#C0D2D3] ">
             <CardHeader className='flex justify-between'>
                 <div>
                     <CardTitle className='text-[#0D5256] '>Detected Operators</CardTitle>
-                    <p className="md:text-sm text-gray-500 mt-1">
+                    <p className="xl:text-sm text-[12px] text-gray-500 mt-1">
                         Status of available operators.
                     </p>
                 </div>
@@ -32,7 +29,7 @@ const {operators,setOperators, detectOperators} = useApp();
                         className="w-full bg-[#0D5256]"
                         onClick={detectOperators}
                         >
-                        Refresh
+                        <LuRefreshCw/>
                     </Button>
                 </div>
             </CardHeader>

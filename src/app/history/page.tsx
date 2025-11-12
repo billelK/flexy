@@ -14,7 +14,7 @@ function FullHistory() {
     const {transactions,handleFilters,handleClear,filters, setFilters, page, setPage} = useApp();
     const pathname = usePathname();
     const bp = useBreakpoint();
-    const pageSize = bp === "xl"? 7: bp ==="2xl" ? 15 :5;
+    const pageSize = bp === "xl"? 8: bp ==="2xl" ? 15 :8;
     const totalPages = Math.ceil(transactions.length / pageSize);
     const paginated = transactions.slice((page - 1) * pageSize, page * pageSize);
 
@@ -34,7 +34,7 @@ function FullHistory() {
             }
     }, [pathname])
   return (
-    <Card className="flex flex-col h-full relative max-h-[calc(100vh-6rem)] mx-auto p-5 mt-4 max-w-7xl w-screen  border-[#C0D2D3] overflow-hidden ">
+    <Card className="flex flex-col relative max-h-[calc(100vh-6rem)] mx-auto p-5 mt-4 xl:max-w-7xl w-screen lg:max-w-6xl  border-[#C0D2D3] overflow-hidden ">
             <CardHeader className='flex justify-between'>
               <div>
                 <CardTitle className='text-[#0D5256] text-xl'>Transactions History</CardTitle>
