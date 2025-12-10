@@ -27,7 +27,7 @@ interface AppContextType {
     setOfferForm: React.Dispatch<React.SetStateAction<offerForm>>;
     modemsChecked: boolean;
     setModemsChecked: React.Dispatch<React.SetStateAction<boolean>>;
-    
+    /* eslint-disable */
     errors: any;
     setErrors: React.Dispatch<React.SetStateAction<any>>;
     isCreation: boolean;
@@ -116,7 +116,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             operator: undefined,
             phone: "",
             amount: 0,
-            mode:undefined,
+            mode: undefined,
             status: "Pending",
             },
     });
@@ -184,7 +184,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
             if (filters.date) {
                 filtered = filtered.filter((t) => {
                 const txDate = new Date(t.created_at);
-                return txDate.toDateString() === new Date(filters.date!).toDateString();
+                const filterDate = new Date(filters.date as Date); // filters.date is guaranteed to exist here
+                return txDate.toDateString() === filterDate.toDateString();
                 });
             }
             

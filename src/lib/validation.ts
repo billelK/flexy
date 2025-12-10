@@ -15,7 +15,6 @@ export const transactionSchema = z.object({
     return false;
   }, { message: "Phone prefix does not match the selected operator", path: ["phone"] }
 );
-
 export const offerSchema = z.object({
   operator: z
   .string()
