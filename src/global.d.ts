@@ -11,8 +11,9 @@ declare global {
       saveOperators: (operators: Operators[]) => Promise<boolean>;
       /* eslint-disable*/
       readOperators: () => Promise<any>;
-      addTransaction: () => Promise<number>;
-      mockRecharge: (transaction: any) => Promise<string>;
+
+      addTransaction: (transaction: Transaction[]) => Promise<number>;
+      mockRecharge: (transaction) => Promise<Transaction[]>;
     };
   }
 }

@@ -27,7 +27,7 @@ interface AppContextType {
     setOfferForm: React.Dispatch<React.SetStateAction<offerForm>>;
     modemsChecked: boolean;
     setModemsChecked: React.Dispatch<React.SetStateAction<boolean>>;
-    /* eslint-disable */
+    
     errors: any;
     setErrors: React.Dispatch<React.SetStateAction<any>>;
     isCreation: boolean;
@@ -113,10 +113,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const form = useForm<TransactionInput>({
             resolver: zodResolver(transactionSchema),
             defaultValues: {
-            operator: "",
+            operator: undefined,
             phone: "",
-            amount: "",
-            mode:"",
+            amount: 0,
+            mode:undefined,
             status: "Pending",
             },
     });

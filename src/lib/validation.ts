@@ -2,14 +2,11 @@
 import { z } from "zod";
 
 export const transactionSchema = z.object({
-  operator: z.enum(["Djezzy", "Mobilis", "Ooredoo"], {
-    errorMap: () => ({ message: "Please select a valid operator" }),
-  }),
-  mode: z.enum(["Recharge", "Facture", "Activation"], {
-    errorMap: () => ({ message: "Please select a valid mode" }),
-  }),
+
+  operator: z.enum(["Djezzy", "Mobilis", "Ooredoo"]),
+  mode: z.enum(["Recharge", "Facture", "Activation"]),
   phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
-  amount: z.coerce.number().min(50, "Minimum amount is 50 DA"),
+  amount: z.number().min(50, "Minimum amount is 50 DA"),
   status: z.enum(["Pending", "Completed", "Failed"]),
 }).refine((data) => {
     if (data.operator === "Djezzy")  return data.phone.startsWith("07");

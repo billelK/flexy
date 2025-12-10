@@ -7,7 +7,6 @@ import TransactionsHistory from "@/components/TransactionsHistory";
 import RecentOffers from "@/components/RecentOffers";
 
 export default function Page() {
-
   return (
     // Remove flex-1 and h-screen from here. Use min-h-full so content can grow if needed.
     <div className="flex flex-col min-h-full "> 
