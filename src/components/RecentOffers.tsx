@@ -9,7 +9,7 @@ function RecentOffers() {
 const {offers, setOffers} = useApp();
 
 useEffect(() => {
-    window.electronAPI.getOffers().then((offers:[]) => {
+    window.electronAPI.getOffers().then((offers) => {
         setOffers(offers);
     })      
 }, [setOffers]);
@@ -53,7 +53,7 @@ useEffect(() => {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#1A7768] to-[#5EAE94]" />
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-linear-to-r from-[#1A7768] to-[#5EAE94]" />
               </div>
               
 

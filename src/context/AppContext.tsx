@@ -3,8 +3,9 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { transactionSchema, TransactionInput, offerSchema } from "@/lib/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner"
+import { z } from "zod";
 
 
 // Define the types for better autocomplete
@@ -92,14 +93,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [operators, setOperators] = useState<Operator[]>([]);
   const [filters, setFilters] = useState<FilterData>({ phone: "", operator: "", date: undefined });
   const [page, setPage] = useState(1);
-  const [offers, setOffers] = useState([]); 
+  const [offers, setOffers] = useState<offer[]>([]); 
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [open, setOpen] = useState(false);
   const [offerForm, setOfferForm] = useState({
     operator: "",
     title: "",
     description: "",
-    price: "",
+    price: 0,
     ussd_code: "",
     image: "" 
   })
@@ -110,8 +111,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   // top-up form Dependencies
 
-    const form = useForm<TransactionInput>({
-            resolver: zodResolver(transactionSchema),
+    const form = useForm<z.infer<typeof transactionSchema>>({
+            resolver: zodResolver(transactionSchema) as Resolver<z.infer<typeof transactionSchema>>,
             defaultValues: {
             operator: undefined,
             phone: "",
@@ -231,7 +232,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         operator: "",
         title: "",
         description: "",
-        price: "",
+        price: 0,
         ussd_code: "",
         image: ""
       })
@@ -332,6 +333,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setIsCreation,
         modemsChecked,
         setModemsChecked,
+        offerToUpdate,
+        setOfferToUpdate,
 
         onSubmit,
         form,

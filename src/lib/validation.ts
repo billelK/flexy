@@ -6,7 +6,7 @@ export const transactionSchema = z.object({
   operator: z.enum(["Djezzy", "Mobilis", "Ooredoo"]),
   mode: z.enum(["Recharge", "Facture", "Activation"]),
   phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
-  amount: z.number().min(50, "Minimum amount is 50 DA"),
+  amount: z.coerce.number().min(50, "Minimum amount is 50 DA"),
   status: z.enum(["Pending", "Completed", "Failed"]),
 }).refine((data) => {
     if (data.operator === "Djezzy")  return data.phone.startsWith("07");
@@ -15,6 +15,7 @@ export const transactionSchema = z.object({
     return false;
   }, { message: "Phone prefix does not match the selected operator", path: ["phone"] }
 );
+
 export const offerSchema = z.object({
   operator: z
   .string()
