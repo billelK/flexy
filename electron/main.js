@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, protocol } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -34,7 +34,9 @@ const createWindow = () => {
     mainWindow.loadURL("http://localhost:3000");
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, "../out/index.html"));
+    // In production we load files via the `app://` protocol so absolute paths
+    // like "/_next/..." resolve to files inside the `out` directory.
+    mainWindow.loadURL("app://index.html");
   }
 };
 
@@ -85,7 +87,64 @@ ipcMain.handle("delete-offer", async (event, id) => {
 });
 
 
-app.on("ready",createWindow)
+// Register a secure, standard `app://` scheme so we can map requests to the
+// exported `out` folder and keep absolute asset paths like `/_next/...` working
+// when the app is opened from file:// in production.
+protocol.registerSchemesAsPrivileged([
+  { scheme: "app", privileges: { standard: true, secure: true } },
+]);
+
+import fs from "fs";
+
+app.whenReady().then(() => {
+  // Map `app://<path>` to `out/<path>` files. Resolve extensionless routes to
+  // their generated `.html` files (e.g., `/history` -> `out/history.html`) and
+  // fall back to `index.html` or `.txt` payloads when necessary.
+  protocol.registerFileProtocol("app", (request, callback) => {
+    try {
+      const requestUrl = new URL(request.url);
+      let pathname = decodeURIComponent(requestUrl.pathname);
+
+      // Normalize root
+      if (pathname === "/" || pathname === "") pathname = "/index.html";
+
+      const basePath = path.join(__dirname, "..", "out");
+
+      // Inspect Accept header to determine if the client wants a Flight payload
+      const headers = request.headers || {};
+      const accept = (headers.accept || headers.Accept || "").toString();
+      const wantsFlight = accept.includes("text/x-component") || accept.includes("application/json");
+
+      // Build candidate list based on expected response type
+      const candidates = wantsFlight
+        ? [
+            path.join(basePath, pathname + ".txt"),
+            path.join(basePath, pathname + ".html"),
+            path.join(basePath, pathname, "index.html"),
+            path.join(basePath, pathname),
+          ]
+        : [
+            path.join(basePath, pathname), // exact path
+            path.join(basePath, pathname + ".html"),
+            path.join(basePath, pathname, "index.html"),
+            path.join(basePath, pathname + ".txt"),
+          ];
+
+      for (const p of candidates) {
+        if (fs.existsSync(p)) {
+          callback({ path: p });
+          return;
+        }
+      }
+
+      callback({ error: -6 }); // FILE_NOT_FOUND
+    } catch (err) {
+      callback({ error: -6 }); // FILE_NOT_FOUND
+    }
+  });
+
+  createWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
