@@ -9,6 +9,24 @@ import { cn } from "@/lib/utils"
 function Header() {
 
   const pathname = usePathname();
+
+  // Use a stable client-side path so the initial render reflects the real URL
+  const [currentPath, setCurrentPath] = React.useState(() =>
+    typeof window !== "undefined" ? window.location.pathname || "/" : pathname || "/"
+  );
+
+  React.useEffect(() => {
+    if (pathname) setCurrentPath(pathname);
+  }, [pathname]);
+
+  const normalize = (p: string) => {
+    if (!p) return "/";
+    // strip any leading /index.html (happens with app:// index loads) and trailing slashes
+    let s = p.replace(/^\/index\.html/, "");
+    s = s.replace(/\/+$|\/$/, "") || "/";
+    return s;
+  };
+
   const tabs = [
       { name: "Home", href: "/" },
       { name: "Offers", href: "/offers" },
@@ -30,9 +48,14 @@ function Header() {
                   href={tab.href}
                   className={cn(
                     "flex-1 text-center py-2 rounded-sm text-sm transition data-[state=active]:bg-[#0D5256]",
-                    pathname === tab.href
-                      ? "text-white shadow bg-[#0D5256]"
-                      : "text-muted-foreground hover:bg-[#C0D2D3]"
+                    (() => {
+                      const current = normalize(pathname);
+                      const tabPath = normalize(tab.href);
+                      const isActive = tabPath === "/"
+                        ? current === "/"
+                        : current === tabPath || current.startsWith(tabPath + "/");
+                      return isActive ? "text-white shadow bg-[#0D5256]" : "text-muted-foreground hover:bg-[#C0D2D3]";
+                    })()
                   )}
                 >
                   {tab.name}

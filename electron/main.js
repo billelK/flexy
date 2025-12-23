@@ -36,7 +36,9 @@ const createWindow = () => {
   } else {
     // In production we load files via the `app://` protocol so absolute paths
     // like "/_next/..." resolve to files inside the `out` directory.
-    mainWindow.loadURL("app://index.html");
+    // Use a host component ("-") in the URL so fetch/XHR treats the origin
+    // as a proper HTTP-like origin (e.g. "app://-/index.html").
+    mainWindow.loadURL("app://-/index.html");
   }
 };
 
@@ -91,7 +93,16 @@ ipcMain.handle("delete-offer", async (event, id) => {
 // exported `out` folder and keep absolute asset paths like `/_next/...` working
 // when the app is opened from file:// in production.
 protocol.registerSchemesAsPrivileged([
-  { scheme: "app", privileges: { standard: true, secure: true } },
+  {
+    scheme: "app",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true, // allow Fetch/Fetch-based APIs to use app://
+      corsEnabled: true, // enable CORS handling on the scheme
+      allowServiceWorkers: true,
+    },
+  },
 ]);
 
 import fs from "fs";
@@ -105,35 +116,51 @@ app.whenReady().then(() => {
       const requestUrl = new URL(request.url);
       let pathname = decodeURIComponent(requestUrl.pathname);
 
+      // If requests are made relative to the base `app://index.html` (e.g., `offers/index.txt`)
+      // the URL becomes `app://index.html/offers/index.txt` — strip the `/index.html` prefix so
+      // we can resolve to `/offers/index.txt`.
+      if (pathname.startsWith("/index.html")) {
+        pathname = pathname.replace(/^\/index\.html/, "") || "/";
+      }
+
       // Normalize root
       if (pathname === "/" || pathname === "") pathname = "/index.html";
 
-      const basePath = path.join(__dirname, "..", "out");
+      // Try common locations for the exported `out` folder:
+      //  - dev (project root): path.join(__dirname, '..', 'out')
+      //  - packaged apps: path.join(process.resourcesPath, 'app', 'out') or path.join(process.resourcesPath, 'out')
+      const candidateBasePaths = [
+        path.join(__dirname, "..", "out"),
+        path.join(process.resourcesPath || __dirname, "app", "out"),
+        path.join(process.resourcesPath || __dirname, "out"),
+      ];
 
       // Inspect Accept header to determine if the client wants a Flight payload
       const headers = request.headers || {};
       const accept = (headers.accept || headers.Accept || "").toString();
       const wantsFlight = accept.includes("text/x-component") || accept.includes("application/json");
 
-      // Build candidate list based on expected response type
-      const candidates = wantsFlight
-        ? [
-            path.join(basePath, pathname + ".txt"),
-            path.join(basePath, pathname + ".html"),
-            path.join(basePath, pathname, "index.html"),
-            path.join(basePath, pathname),
-          ]
-        : [
-            path.join(basePath, pathname), // exact path
-            path.join(basePath, pathname + ".html"),
-            path.join(basePath, pathname, "index.html"),
-            path.join(basePath, pathname + ".txt"),
-          ];
+      for (const basePath of candidateBasePaths) {
+        // Build candidate list based on expected response type
+        const candidates = wantsFlight
+          ? [
+              path.join(basePath, pathname + ".txt"),
+              path.join(basePath, pathname + ".html"),
+              path.join(basePath, pathname, "index.html"),
+              path.join(basePath, pathname),
+            ]
+          : [
+              path.join(basePath, pathname), // exact path
+              path.join(basePath, pathname + ".html"),
+              path.join(basePath, pathname, "index.html"),
+              path.join(basePath, pathname + ".txt"),
+            ];
 
-      for (const p of candidates) {
-        if (fs.existsSync(p)) {
-          callback({ path: p });
-          return;
+        for (const p of candidates) {
+          if (fs.existsSync(p)) {
+            callback({ path: p });
+            return;
+          }
         }
       }
 
