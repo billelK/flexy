@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import Image from "next/image";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { IoPencil } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import OffreCreationDialog from "@/components/OfferCreationDialog";
+import OfferPhoneDialog from "@/components/OfferPhoneDialog";
 
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 
 export default function OffersPage() {
   const { offers, setOffers, activeFilter, setActiveFilter, onEditOffer, onDeleteOffer } = useApp();
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<any>(null);
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
     window.electronAPI.getOffers().then((data) => {
@@ -24,10 +29,23 @@ export default function OffersPage() {
       ? offers
       : offers.filter((offer) => offer.operator === activeFilter);
 
+  function openPhoneDialog(offer: any) {
+    setSelectedOffer(offer);
+    setPhone("");
+    setDialogOpen(true);
+  }
+
+  function confirmPhone(phoneValue: string) {
+    if (!phoneValue) return;
+    // For now, just log — you can replace this with any action (IPC call etc.)
+    console.log("Offer confirmed:", { offer: selectedOffer, phone: phoneValue });
+    setDialogOpen(false);
+  }
+
   return (
     <Card className="flex flex-col max-h-[calc(100vh-6rem)] lg:max-w-6xl relative mx-auto p-5 mt-4 xl:max-w-7xl w-full border-[#C0D2D3] overflow-hidden">
       {/* Header + Filters (fixed area) */}
-      <CardHeader className="flex justify-between flex-shrink-0">
+      <CardHeader className="flex justify-between shrink-0">
         <div>
           <CardTitle className="text-[#0D5256] text-xl">Offers</CardTitle>
           <p className="text-sm text-gray-500 mt-1">
@@ -61,6 +79,7 @@ export default function OffersPage() {
           {filteredOffers.map((offer) => (
             <div
               key={offer.id}
+              onClick={() => openPhoneDialog(offer)}
               className="rounded-2xl overflow-hidden border border-[#C0D2D3]/40 shadow-sm hover:shadow-md hover:-translate-y-1 transition-transform bg-[#f9fafb] "
             >
               {/* Image banner */}
@@ -88,12 +107,18 @@ export default function OffersPage() {
                   </p>
                   <div className="flex gap-1">
                     <IoPencil
-                      onClick={() => onEditOffer(offer)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditOffer(offer);
+                      }}
                       className="p-1 rounded-full cursor-pointer transition-all duration-200 hover:scale-110 active:scale-95 w-7 h-7"
                       color="#1A7768"
                     />
                     <RiDeleteBinLine
-                      onClick={() => onDeleteOffer(offer.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteOffer(offer.id);
+                      }}
                       className="p-1 rounded-full cursor-pointer transition-all duration-200 hover:scale-110 active:scale-95 w-7 h-7"
                       color="#EF4444"
                     />
@@ -105,6 +130,14 @@ export default function OffersPage() {
         </div>
       
       </div>
+
+      {/* Phone number dialog */}
+      <OfferPhoneDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        offer={selectedOffer}
+        onConfirm={confirmPhone}
+      />
     </Card>
   );
 }
