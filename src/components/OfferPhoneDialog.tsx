@@ -23,7 +23,8 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   offer: Offer | null;
-  onConfirm: (phone: string) => void;
+  onConfirm: (phone: string) => Promise<any> | void;
+  isSending?: boolean;
 };
 
 const operatorPrefix: Record<string, string> = {
@@ -32,7 +33,7 @@ const operatorPrefix: Record<string, string> = {
   Djezzy: "07",
 };
 
-export default function OfferPhoneDialog({ open, onOpenChange, offer, onConfirm }: Props) {
+export default function OfferPhoneDialog({ open, onOpenChange, offer, onConfirm, isSending = false }: Props) {
   const [phone, setPhone] = useState("");
 
   // Reset phone when offer changes / dialog opens and prefill with operator prefix if available
@@ -43,10 +44,10 @@ export default function OfferPhoneDialog({ open, onOpenChange, offer, onConfirm 
     }
   }, [open, offer]);
 
-  function confirm() {
+  async function confirm() {
     if (!phone) return;
-    onConfirm(phone);
-    onOpenChange(false);
+    await onConfirm(phone);
+    // don't close here; parent will close the dialog when the send completes
   }
 
   return (
@@ -71,24 +72,32 @@ export default function OfferPhoneDialog({ open, onOpenChange, offer, onConfirm 
             type="tel"
             inputMode="numeric"
             maxLength={10}
+            disabled={isSending}
           />
         </div>
 
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline" className="hover:bg-[#f4f4f5]" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" className="hover:bg-[#f4f4f5]" onClick={() => onOpenChange(false)} disabled={isSending}>
               Cancel
             </Button>
           </DialogClose>
           <Button
             onClick={confirm}
             disabled={
-              phone.length !== 10 ||
-              (offer?.operator ? !phone.startsWith(operatorPrefix[offer.operator]) : false)
+              (phone.length !== 10 ||
+              (offer?.operator ? !phone.startsWith(operatorPrefix[offer.operator]) : false)) || isSending
             }
             className="bg-[#0d5256] text-white shadow-md rounded-lg hover:bg-[#1a7768]"
           >
-            Confirm
+            {isSending ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Sending...
+              </span>
+            ) : (
+              "Confirm"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

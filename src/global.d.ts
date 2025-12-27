@@ -13,6 +13,7 @@ declare global {
 
       addTransaction: (transaction: Transaction) => Promise<number>;
       mockRecharge: (transaction: Transaction) => Promise<Transaction>;
+      sendUSSDOffer: (offer: any, phone: string) => Promise<Transaction>;
       
       addOffer: (offer: any) => Promise<offer>;
       updateOffer: (offer: any) => Promise<offer>;

@@ -57,11 +57,8 @@ export async function performRecharge(transaction) {
   const config = loadOperatorsConfig();
 
   const operatorName = transaction.operator;
-  // For testing: pick the first port if you want to force COM1 even when operator unknown
-  // const operatorEntry = portsData.find(p => p.operator === operatorName);
-  const operatorEntry = portsData.find(p => p.operator === operatorName) || portsData[0]; // fallback to first port
-
-  const operatorConfig = config[operatorName];
+  // require exact matching port for the operator — no fallback to other ports
+  const operatorEntry = portsData.find(p => p.operator === operatorName);
 
   console.log("operatorEntry:", operatorEntry);
 
@@ -70,21 +67,36 @@ export async function performRecharge(transaction) {
       ...transaction,
       status: "Failed",
       created_at: new Date().toISOString(),
-      message: `No ports available to test.`,
+      message: `No port found for operator ${operatorName}.`,
     };
   }
 
   const portPath = operatorEntry.path;
-  const template = operatorConfig?.modes?.[transaction.mode];
 
-  // if there's no template for this operator/mode that's fine in test mode:
+  // require an explicit USSD template passed on the transaction (no fallback to operator config)
+  const template = transaction.ussd_template || transaction.ussd || transaction.ussd_code;
   if (!template) {
-    console.warn("No USSD template for operator/mode.");
+    return {
+      ...transaction,
+      status: "Failed",
+      created_at: new Date().toISOString(),
+      message: "No USSD template provided for this transaction.",
+    };
   }
 
-  const ussd = (template || "*000*{number}*{amount}#")
-    .replace("{number}", transaction.phone)
-    .replace("{amount}", transaction.amount);
+  // the template must include a number placeholder
+  if (!template.includes("{number}")) {
+    return {
+      ...transaction,
+      status: "Failed",
+      created_at: new Date().toISOString(),
+      message: "USSD template is missing the '{number}' placeholder.",
+    };
+  }
+
+  const ussd = template
+    .replace(/{number}/g, transaction.phone)
+    .replace(/{amount}/g, transaction.amount);
 
   console.log("Testing port:", portPath, "USSD:", ussd);
 
@@ -211,6 +223,172 @@ export async function performRecharge(transaction) {
     try { if (port && port.isOpen) port.close(); } catch (e) {return {error: e}}
     return {
       ...transaction,
+      status: "Failed",
+      created_at: new Date().toISOString(),
+      message: `Exception: ${err.message || String(err)}`,
+    };
+  }
+}
+
+export async function sendUSSDForOffer(offer, phone) {
+  const portsData = loadOperatorsPorts();
+  const config = loadOperatorsConfig();
+
+  const operatorName = offer.operator;
+  // require exact port match for operator
+  const operatorEntry = portsData.find(p => p.operator === operatorName);
+
+  if (!operatorEntry) {
+    return {
+      operator: operatorName,
+      phone,
+      status: "Failed",
+      created_at: new Date().toISOString(),
+      message: `No port found for operator ${operatorName}`,
+    };
+  }
+
+  const portPath = operatorEntry.path;
+
+  // use offer's ussd_code only (no fallback to operator config)
+  const ussdTemplate = offer.ussd_code;
+  if (!ussdTemplate) {
+    return {
+      operator: operatorName,
+      phone,
+      status: "Failed",
+      created_at: new Date().toISOString(),
+      message: "Offer is missing an 'ussd_code' template.",
+    };
+  }
+
+  if (!ussdTemplate.includes("{number}")) {
+    return {
+      operator: operatorName,
+      phone,
+      status: "Failed",
+      created_at: new Date().toISOString(),
+      message: "Offer USSD template must include the '{number}' placeholder.",
+    };
+  }
+
+  const ussd = ussdTemplate.replace(/{number}/g, phone).replace(/{amount}/g, String(offer.price || ""));
+
+  console.log("Sending USSD on port:", portPath, "USSD:", ussd);
+
+  let port;
+  try {
+    port = new SerialPort({ path: portPath, baudRate: 115200, autoOpen: false });
+    await new Promise((resolve, reject) => port.open(err => (err ? reject(err) : resolve())));
+
+    const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
+
+    const response = await new Promise((resolve) => {
+      let done = false;
+      let raw = "";
+
+      function onData(line) {
+        raw += line + "\n";
+        console.log("📡 Serial line:", line);
+
+        if (line.includes("OK")) {
+          done = true;
+          cleanup();
+          return resolve({ code: "OK", raw });
+        }
+        if (line.includes("ERROR")) {
+          done = true;
+          cleanup();
+          return resolve({ code: "ERROR", raw });
+        }
+        if (line.startsWith("+CUSD") || line.startsWith("+CMT") || line.startsWith("+CM")) {
+          done = true;
+          cleanup();
+          return resolve({ code: "OK", raw });
+        }
+      }
+
+      function onError(err) {
+        if (!done) {
+          done = true;
+          cleanup();
+          return resolve({ code: "PORT_ERROR", raw: raw + "\n" + String(err) });
+        }
+      }
+
+      function cleanup() {
+        try { parser.off("data", onData); } catch (e) {return {error: e}}
+        try { port.off("error", onError); } catch (e) {return {error: e}}
+      }
+
+      parser.on("data", onData);
+      port.on("error", onError);
+
+      const atCommand = `AT+CUSD=1,"${ussd}",15`;
+      port.write(atCommand + "\r", (err) => {
+        if (err) {
+          cleanup();
+          return resolve({ code: "WRITE_ERROR", raw: String(err) });
+        }
+      });
+
+      const timeoutMs = 10000;
+      setTimeout(() => {
+        if (!done) {
+          done = true;
+          cleanup();
+          resolve({ code: "TIMEOUT", raw });
+        }
+      }, timeoutMs);
+    });
+
+    try { if (port && port.isOpen) port.close(); } catch (e) {return {error: e}}
+
+    const base = {
+      operator: operatorName,
+      phone,
+      amount: offer.price || 0,
+      id: Date.now(),
+      created_at: new Date().toISOString(),
+    };
+
+    if (response.code === "OK") {
+      return {
+        ...base,
+        status: "Completed",
+        message: "OK — reply received",
+      };
+    } else if (response.code === "ERROR") {
+      return {
+        ...base,
+        status: "Failed",
+        message: "Modem returned ERROR",
+      };
+    } else if (response.code === "TIMEOUT") {
+      return {
+        ...base,
+        status: "Failed",
+        message: "No response (timeout)",
+      };
+    } else if (response.code === "PORT_ERROR" || response.code === "WRITE_ERROR") {
+      return {
+        ...base,
+        status: "Failed",
+        message: `Port error: ${response.raw}`,
+      };
+    } else {
+      return {
+        ...base,
+        status: "Failed",
+        message: `Unknown response: ${response.code}`,
+      };
+    }
+  } catch (err) {
+    console.error("USSD sending failed (outer):", err);
+    try { if (port && port.isOpen) port.close(); } catch (e) {return {error: e}}
+    return {
+      operator: operatorName,
+      phone,
       status: "Failed",
       created_at: new Date().toISOString(),
       message: `Exception: ${err.message || String(err)}`,

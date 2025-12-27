@@ -16,4 +16,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   detectOperators: () => ipcRenderer.invoke('detect-operators'),
   saveOperators: (operators) => ipcRenderer.invoke('save-operators', operators),
   readOperators: () => ipcRenderer.invoke('read-operators'),
+  sendUSSDOffer: (offer, phone) => ipcRenderer.invoke('send-ussd-offer', offer, phone),
 });

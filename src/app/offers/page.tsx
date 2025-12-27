@@ -8,6 +8,7 @@ import { IoPencil } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import OffreCreationDialog from "@/components/OfferCreationDialog";
 import OfferPhoneDialog from "@/components/OfferPhoneDialog";
+import { toast } from "sonner";
 
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 
@@ -17,6 +18,7 @@ export default function OffersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
   const [phone, setPhone] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
     window.electronAPI.getOffers().then((data) => {
@@ -35,11 +37,40 @@ export default function OffersPage() {
     setDialogOpen(true);
   }
 
-  function confirmPhone(phoneValue: string) {
+  async function confirmPhone(phoneValue: string) {
     if (!phoneValue) return;
-    // For now, just log — you can replace this with any action (IPC call etc.)
-    console.log("Offer confirmed:", { offer: selectedOffer, phone: phoneValue });
-    setDialogOpen(false);
+
+    setIsSending(true);
+    const toastId = toast.loading("Sending USSD...");
+
+    try {
+      const result = await window.electronAPI.sendUSSDOffer(selectedOffer, phoneValue);
+      console.log("USSD result:", result);
+
+      // persist result as a transaction for history
+      await window.electronAPI.addTransaction({
+        operator: selectedOffer?.operator,
+        mode: "Activation",
+        phone: phoneValue,
+        amount: selectedOffer?.price ?? 0,
+        status: result?.status ?? "Failed",
+        message: result?.message,
+      });
+
+      toast.dismiss(toastId);
+      if (result?.status === "Completed") {
+        toast.success(result?.message || "USSD sent successfully.");
+      } else {
+        toast.error(result?.message || "USSD failed.");
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Failed to send USSD.");
+      console.error("USSD send failed:", err);
+    } finally {
+      setIsSending(false);
+      setDialogOpen(false);
+    }
   }
 
   return (
@@ -137,6 +168,7 @@ export default function OffersPage() {
         onOpenChange={setDialogOpen}
         offer={selectedOffer}
         onConfirm={confirmPhone}
+        isSending={isSending}
       />
     </Card>
   );

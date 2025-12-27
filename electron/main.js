@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import { getAllTransactions,addTransaction, mockRecharge } from "../src/lib/transactions.js";
 import { getAllOffers, addOffer, updateOffer, deleteOffer} from "../src/lib/offers.js";
 
-import { detectOperators, performRecharge } from "../src/lib/portServices.js";
+import { detectOperators, performRecharge, sendUSSDForOffer } from "../src/lib/portServices.js";
 import { saveDetectedOperators, readDetectedOperators } from '../src/lib/operatorMappings.js'
 
 const __filename = fileURLToPath(import.meta.url);
@@ -86,6 +86,11 @@ ipcMain.handle("read-operators", async () => {
 
 ipcMain.handle("delete-offer", async (event, id) => {
   return deleteOffer(id);
+});
+
+// send USSD using offer template and specified phone (from renderer)
+ipcMain.handle("send-ussd-offer", async (event, offer, phone) => {
+  return await sendUSSDForOffer(offer, phone);
 });
 
 
