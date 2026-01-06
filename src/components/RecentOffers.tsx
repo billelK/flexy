@@ -1,16 +1,28 @@
-import React,{useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import { useApp } from '@/context/AppContext';
+
+interface Offer {
+  id: number;
+  operator: string;
+  title: string;
+  description: string;
+  price: number;
+  image?: string;
+}
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
 import OfferPhoneDialog from '@/components/OfferPhoneDialog';
 import { toast } from 'sonner';
+import { TransactionInput } from '@/lib/validation';
+
+type LocalTransaction = TransactionInput & { id: number; created_at: string; message?: string };
 
 function RecentOffers() {
 const {offers, setOffers, transactions, setTransactions} = useApp();
 const [dialogOpen, setDialogOpen] = useState(false);
-const [selectedOffer, setSelectedOffer] = useState<any>(null);
+const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
 const [isSending, setIsSending] = useState(false);
 
 useEffect(() => {
@@ -19,9 +31,9 @@ useEffect(() => {
     })      
 }, [setOffers]);
 
-    const filteredOffers = offers.slice(0, 4); // Get the 4 most recent offers
+    const filteredOffers: Offer[] = offers.slice(0, 4); // Get the 4 most recent offers
 
-    function openPhoneDialog(offer: any) {
+    function openPhoneDialog(offer: Offer) {
         setSelectedOffer(offer);
         setDialogOpen(true);
     }
@@ -33,16 +45,24 @@ useEffect(() => {
         const toastId = toast.loading("Sending USSD...");
 
         try {
-            const result = await window.electronAPI.sendUSSDOffer(selectedOffer, phoneValue);
+            if (!selectedOffer) {
+                toast.dismiss(toastId);
+                toast.error("No offer selected.");
+                setIsSending(false);
+                setDialogOpen(false);
+                return;
+            }
+            const offer = selectedOffer;
+            const result = await window.electronAPI.sendUSSDOffer(offer, phoneValue);
 
             const nextId = transactions && transactions.length > 0 ? transactions[0].id + 1 : 1;
-            const newTx = {
+            const newTx: LocalTransaction = {
                 id: nextId,
-                operator: selectedOffer?.operator,
+                operator: offer.operator as TransactionInput['operator'],
                 mode: "Offer",
                 phone: phoneValue,
-                amount: selectedOffer?.price ?? 0,
-                status: result?.status ?? "Failed",
+                amount: offer.price ?? 0,
+                status: (result?.status ?? "Failed") as TransactionInput['status'],
                 message: result?.message,
                 created_at: result?.created_at ?? new Date().toISOString(),
             };
@@ -100,7 +120,7 @@ useEffect(() => {
               {/* Image banner */}
               <div className="relative w-full h-35 bg-white">
                 <Image
-                  src={offer.image}
+                  src={offer.image ?? "/default-offer.png"}
                   alt={offer.title}
                   fill
                   className="object-cover"

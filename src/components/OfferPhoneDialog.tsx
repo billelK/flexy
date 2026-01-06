@@ -23,7 +23,7 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   offer: Offer | null;
-  onConfirm: (phone: string) => Promise<any> | void;
+  onConfirm: (phone: string) => Promise<void>;
   isSending?: boolean;
 };
 

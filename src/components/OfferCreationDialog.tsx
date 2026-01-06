@@ -41,7 +41,7 @@ export function CreateOfferDialog() {
         <Button onClick={onCreate} className='bg-[#0D5256]'><FiPlusCircle className="h-5 w-5" color="white"/>Create Offer</Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle className="text-[#0D5256]"> {isCreation? "Create new Offer": "Update Offer"}</DialogTitle>
           <DialogDescription>
@@ -150,7 +150,7 @@ export function CreateOfferDialog() {
                 <Button onClick={() => {resetForm()}} className="hover:bg-[#f4f4f5]" variant="outline" data-slot="dialog-close"> Cancel </Button>
             </DialogClose>
             
-            <div className="min-w-[260px]"></div>
+            <div className="min-w-65"></div>
             <Button className="bg-[#0D5256]" onClick={handleSubmit}>Save Offer</Button>
         </DialogFooter>
       </DialogContent>

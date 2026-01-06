@@ -8,6 +8,12 @@ import { IoPencil } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import OffreCreationDialog from "@/components/OfferCreationDialog";
 import OfferPhoneDialog from "@/components/OfferPhoneDialog";
+import { TransactionInput } from '@/lib/validation';
+
+type LocalTransaction = TransactionInput & { id: number; created_at: string; message?: string };
+
+interface Offer { id: number; operator: string; title?: string; description?: string; price?: number; image?: string }
+
 import { toast } from "sonner";
 
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
@@ -16,7 +22,7 @@ export default function OffersPage() {
   const { offers, setOffers, activeFilter, setActiveFilter, onEditOffer, onDeleteOffer, transactions, setTransactions } = useApp();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedOffer, setSelectedOffer] = useState<any>(null);
+  const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [phone, setPhone] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -31,7 +37,7 @@ export default function OffersPage() {
       ? offers
       : offers.filter((offer) => offer.operator === activeFilter);
 
-  function openPhoneDialog(offer: any) {
+  function openPhoneDialog(offer: Offer) {
     setSelectedOffer(offer);
     setPhone("");
     setDialogOpen(true);
@@ -44,19 +50,27 @@ export default function OffersPage() {
     const toastId = toast.loading("Sending USSD...");
 
     try {
-      const result = await window.electronAPI.sendUSSDOffer(selectedOffer, phoneValue);
+      if (!selectedOffer) {
+        toast.dismiss(toastId);
+        toast.error("No offer selected.");
+        setIsSending(false);
+        setDialogOpen(false);
+        return;
+      }
+      const offer = selectedOffer;
+      const result = await window.electronAPI.sendUSSDOffer(offer, phoneValue);
       console.log("USSD result:", result);
 
       // persist result as a transaction for history
       // compute next sequential id based on existing transactions in state
       const nextId = transactions && transactions.length > 0 ? transactions[0].id + 1 : 1;
-      const newTx = {
+      const newTx: LocalTransaction = {
         id: nextId,
-        operator: selectedOffer?.operator,
+        operator: offer.operator as TransactionInput['operator'],
         mode: "Offer",
         phone: phoneValue,
-        amount: selectedOffer?.price ?? 0,
-        status: result?.status ?? "Failed",
+        amount: offer.price ?? 0,
+        status: (result?.status ?? "Failed") as TransactionInput['status'],
         message: result?.message,
         created_at: result?.created_at ?? new Date().toISOString(),
       };
@@ -124,7 +138,7 @@ export default function OffersPage() {
               {/* Image banner */}
               <div className="relative w-full h-28 bg-white">
                 <Image
-                  src={offer.image}
+                  src={offer.image ?? "/default-offer.png"}
                   alt={offer.title}
                   fill
                   className="object-cover"
