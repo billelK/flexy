@@ -24,7 +24,7 @@ declare global {
 
 interface Transaction {
   operator: "Djezzy" | "Mobilis" | "Ooredoo";
-  mode: "Recharge" | "Facture" | "Activation";
+  mode: "Recharge" | "Facture" | "Activation" | "Offer";
   phone: string;
   amount: number;
   status: "Pending" | "Completed" | "Failed";

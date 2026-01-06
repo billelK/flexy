@@ -4,7 +4,7 @@ import { z } from "zod";
 export const transactionSchema = z.object({
 
   operator: z.enum(["Djezzy", "Mobilis", "Ooredoo"]),
-  mode: z.enum(["Recharge", "Facture", "Activation"]),
+  mode: z.enum(["Recharge", "Facture", "Activation", "Offer"]),
   phone: z.string().regex(/^\d{10}$/, "Phone must be exactly 10 digits"),
   amount: z.coerce.number().min(50, "Minimum amount is 50 DA"),
   status: z.enum(["Pending", "Completed", "Failed"]),

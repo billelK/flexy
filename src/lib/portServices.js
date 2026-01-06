@@ -57,7 +57,6 @@ export async function performRecharge(transaction) {
   const config = loadOperatorsConfig();
 
   const operatorName = transaction.operator;
-  // require exact matching port for the operator — no fallback to other ports
   const operatorEntry = portsData.find(p => p.operator === operatorName);
 
   console.log("operatorEntry:", operatorEntry);
@@ -73,24 +72,15 @@ export async function performRecharge(transaction) {
 
   const portPath = operatorEntry.path;
 
-  // require an explicit USSD template passed on the transaction (no fallback to operator config)
-  const template = transaction.ussd_template || transaction.ussd || transaction.ussd_code;
-  if (!template) {
-    return {
-      ...transaction,
-      status: "Failed",
-      created_at: new Date().toISOString(),
-      message: "No USSD template provided for this transaction.",
-    };
-  }
+  const operatorCfg = config?.[operatorName];
+  const template = operatorCfg?.modes?.[transaction.mode];
 
-  // the template must include a number placeholder
-  if (!template.includes("{number}")) {
+  if (!template || typeof template !== "string" || template.trim() === "") {
     return {
       ...transaction,
       status: "Failed",
       created_at: new Date().toISOString(),
-      message: "USSD template is missing the '{number}' placeholder.",
+      message: `operatorConfig is missing or has an invalid template for mode '${transaction.mode}' and operator '${operatorName}'.`,
     };
   }
 
@@ -232,7 +222,7 @@ export async function performRecharge(transaction) {
 
 export async function sendUSSDForOffer(offer, phone) {
   const portsData = loadOperatorsPorts();
-  const config = loadOperatorsConfig();
+  
 
   const operatorName = offer.operator;
   // require exact port match for operator
@@ -250,7 +240,6 @@ export async function sendUSSDForOffer(offer, phone) {
 
   const portPath = operatorEntry.path;
 
-  // use offer's ussd_code only (no fallback to operator config)
   const ussdTemplate = offer.ussd_code;
   if (!ussdTemplate) {
     return {

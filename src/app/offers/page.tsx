@@ -13,7 +13,7 @@ import { toast } from "sonner";
 const operators = ["ALL", "Ooredoo", "Djezzy", "Mobilis"];
 
 export default function OffersPage() {
-  const { offers, setOffers, activeFilter, setActiveFilter, onEditOffer, onDeleteOffer } = useApp();
+  const { offers, setOffers, activeFilter, setActiveFilter, onEditOffer, onDeleteOffer, transactions, setTransactions } = useApp();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
@@ -48,14 +48,22 @@ export default function OffersPage() {
       console.log("USSD result:", result);
 
       // persist result as a transaction for history
-      await window.electronAPI.addTransaction({
+      // compute next sequential id based on existing transactions in state
+      const nextId = transactions && transactions.length > 0 ? transactions[0].id + 1 : 1;
+      const newTx = {
+        id: nextId,
         operator: selectedOffer?.operator,
-        mode: "Activation",
+        mode: "Offer",
         phone: phoneValue,
         amount: selectedOffer?.price ?? 0,
         status: result?.status ?? "Failed",
         message: result?.message,
-      });
+        created_at: result?.created_at ?? new Date().toISOString(),
+      };
+
+      await window.electronAPI.addTransaction(newTx);
+      // update UI reactively
+      setTransactions((prev) => [newTx, ...prev]);
 
       toast.dismiss(toastId);
       if (result?.status === "Completed") {

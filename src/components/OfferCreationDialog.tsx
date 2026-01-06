@@ -127,13 +127,14 @@ export function CreateOfferDialog() {
               onChange={e => handleChange("ussd_code", e.target.value)}
               className="col-span-3"
             />
+            <p className="col-span-4 text-sm text-gray-500 text-center ">Please include <code className="font-mono">{'{number}'}</code> in the USSD</p>
             {errors.ussd_code && (
             <p className="col-span-4 text-sm text-red-500 text-right">{errors.ussd_code}</p>
           )}
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-left text-sm font-medium">Image</Label>
+            <Label className="text-left text-sm font-medium">Image :</Label>
             <div className="col-span-2">
               <FileUploader
                 value={offerForm.image}
