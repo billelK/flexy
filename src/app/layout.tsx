@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner"
 import { AppProvider } from "@/context/AppContext"; 
 import Header from "@/components/Header";
+import SplashScreen from "@/components/SplashScreen";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,6 +34,9 @@ export default function RootLayout({
       >
         <Toaster position="top-center" richColors />
         
+        {/* Splash screen shown on app start */}
+        <SplashScreen />
+
         {/* AppProvider wraps everything that needs context */}
         <AppProvider> 
           <Header/>

@@ -34,7 +34,7 @@ function Header() {
     ];
 
   return (
-    <header className="bg-white h-15 border-b border-[#C0D2D3] flex items-center p-2 shadow-s overflow-visible flex-1 sticky top-0 z-10">
+    <header className="bg-white h-16 border-b border-[#C0D2D3] flex items-center p-2 shadow-sm overflow-visible sticky top-0 z-10">
         <div className="flex flex-1 items-center p-2">
           <img src="/title-logo.png" alt="Logo" className="inline-block mr-2 w-auto w-7 h-7"/>
           <h1 className="font-medium text-xl ">FLEXY PAY</h1>

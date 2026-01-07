@@ -1,6 +1,6 @@
 {
   "name": "flexy",
-  "version": "0.1.0",
+  "version": "0.1.1-alpha",
   "description": "Offline desktop application for managing modems and USSD communication",
   "author": "Billel Khansal",
   "private": true,

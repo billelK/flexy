@@ -116,8 +116,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html, #__next {
+    height: 100%;
+  }
   body {
     @apply bg-background text-foreground;
+    height: 100%;
+    overflow: hidden; /* hide page-level scrollbar; internal .scrollable elements remain scrollable */
   }
 }
 /* globals.css */
