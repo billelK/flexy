@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, protocol } from "electron";
+import { app, BrowserWindow, ipcMain, protocol, Menu } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -12,17 +12,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow = null;
-const midRangeLaptops = { width: 1536, height: 864 };
-const midSizeMonitors = { width: 1440, height: 900 }; // 100%
-const smallLaptopScreen = { width: 1366, height: 768 }; // 100%
+
+// Application title and emoji (change emoji here if you want a different one)
+const APP_TITLE = process.env.APP_TITLE || "Flexy Pay";
+// Set the app name (used on some platforms)
+try { app.setName && app.setName("Flexy Pay"); } catch (e) { /* ignore */ }
+// On Windows set the AppUserModelID so the taskbar groups and notifications use our app identity
+if (process.platform === "win32") {
+  try { app.setAppUserModelId && app.setAppUserModelId("com.flexypay.app"); } catch (e) { /* ignore */ }
+}
+
 const compactLaptop = { width: 1280, height: 800 }; // 90%
-const HDmonitors = { width: 1280, height: 720 };// 90%
-const tabletOldMonitors = { width: 1024, height: 768 }; // 50 - 50
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: compactLaptop.width,
     height: compactLaptop.height,
+    title: APP_TITLE,
+    icon: path.join(__dirname, 'public/FlexyPay2.ico'),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -174,6 +181,13 @@ app.whenReady().then(() => {
       callback({ error: -6 }); // FILE_NOT_FOUND
     }
   });
+
+  // Remove default app menu (removes File/Edit/View, etc.) and set a minimal menu
+  try {
+    Menu.setApplicationMenu(null);
+  } catch (e) {
+    console.warn("Failed to set application menu to null:", e);
+  }
 
   createWindow();
 });

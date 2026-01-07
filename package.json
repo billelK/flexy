@@ -1,6 +1,15 @@
 {
   "name": "flexy",
-  "version": "0.1.1-alpha",
+  "version": "0.1.3-alpha",
+  "build": {
+    "appId": "com.flexy.pos",
+    "productName": "Flexy Pay",
+    "icon": "public/FlexyPay2.ico",
+    "win": {
+      "target": "nsis",
+      "icon": "public/FlexyPay2.ico"
+    }
+  },
   "description": "Offline desktop application for managing modems and USSD communication",
   "author": "Billel Khansal",
   "private": true,

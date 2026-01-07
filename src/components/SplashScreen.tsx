@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
-export default function SplashScreen(): JSX.Element | null {
+export default function SplashScreen(): React.ReactElement | null {
   const [visible, setVisible] = useState(true);
   const [animateOut, setAnimateOut] = useState(false);
 
   useEffect(() => {
     // Show briefly then animate out
-    const OUT_AFTER = 5000; // start animate out after 1.4s
-    const REMOVE_AFTER = 6000; // remove from DOM after 1.9s
+    const OUT_AFTER = 5000; 
+    const REMOVE_AFTER = 6000; 
 
     const t1 = setTimeout(() => setAnimateOut(true), OUT_AFTER);
     const t2 = setTimeout(() => setVisible(false), REMOVE_AFTER);
